@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineFinder Pro Max Ultra - دليل وتشغيل الأفلام</title>
+    <title>EfrînFlix - منصة سينما عفرين للأفلام العالمية</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
@@ -100,14 +100,14 @@
     <!-- Header / Navbar -->
     <header class="sticky top-0 z-40 glass-header px-4 lg:px-8 py-3 transition-all duration-300">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <!-- Logo -->
+            <!-- Logo Kurdish Afrin Brand -->
             <div onclick="resetToHome()" class="flex items-center gap-2 md:gap-3 cursor-pointer group">
-                <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-tr from-brand-red via-red-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl md:text-2xl shadow-lg shadow-brand-red/30 group-hover:scale-105 transition">
+                <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-brand-red to-amber-500 flex items-center justify-center text-white font-black text-xl md:text-2xl shadow-lg shadow-brand-red/30 group-hover:scale-105 transition">
                     <i class="fa-solid fa-film"></i>
                 </div>
                 <div>
-                    <span class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Cine<span class="text-brand-red">Finder</span></span>
-                    <span class="block text-[9px] md:text-[10px] font-bold text-brand-accent tracking-widest uppercase -mt-1">Pro Max Ultra</span>
+                    <span class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Efrîn<span class="text-brand-red">Flix</span></span>
+                    <span class="block text-[9px] md:text-[10px] font-bold text-emerald-400 tracking-widest uppercase -mt-1">سينما عفرين Pro</span>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@
                     <i class="fa-solid fa-layer-group text-xs"></i> التصنيفات
                 </a>
                 <button onclick="filterFreeOnly()" class="hover:text-emerald-400 transition flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                    <i class="fa-solid fa-fire text-xs"></i> الأكثر تقييماً ⭐
+                    <i class="fa-solid fa-star text-xs"></i> الأكثر تقييماً ⭐
                 </button>
             </nav>
 
@@ -138,16 +138,16 @@
     <main class="flex-grow">
         <!-- Hero Section -->
         <section class="relative py-8 md:py-16 px-4 lg:px-8 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-b from-brand-red/10 via-brand-accent/5 to-transparent blur-3xl -z-10"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-red/10 via-emerald-500/5 to-transparent blur-3xl -z-10"></div>
             
             <div class="max-w-4xl mx-auto text-center space-y-4 md:space-y-6">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[11px] md:text-xs font-bold text-emerald-400 border border-emerald-500/30 mb-1">
-                    <i class="fa-solid fa-circle-play text-emerald-400"></i> ابحث عن أي فيلم وشاهده مباشرة مجاناً وبجودة عالية
+                    <span>🛡️</span> مشغل محمي من الإعلانات والنوافذ المنبثقة
                 </div>
 
                 <h1 class="text-3xl md:text-6xl font-black leading-tight text-white tracking-tight">
-                    دليلك للبحث و مشاهدة <br class="hidden sm:inline">
-                    <span class="bg-gradient-to-r from-brand-red via-red-500 to-amber-500 bg-clip-text text-transparent">الأفلام العالمية أونلاين</span>
+                    ابحث عن فيلمك وشاهده مباشرة <br class="hidden sm:inline">
+                    <span class="bg-gradient-to-r from-emerald-400 via-amber-400 to-brand-red bg-clip-text text-transparent">بجودة عالية وبدون إعلانات</span>
                 </h1>
 
                 <!-- Search Input Box -->
@@ -155,9 +155,9 @@
                     <div class="relative flex items-center">
                         <input type="text" id="searchInput" placeholder="اكتب اسم الفيلم بالعربية أو الإنجليزية..." 
                             onkeyup="handleSearchKey(event)"
-                            class="w-full pl-28 pr-12 py-3.5 md:py-4 rounded-2xl glass-card text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-red transition text-sm md:text-base shadow-2xl">
+                            class="w-full pl-28 pr-12 py-3.5 md:py-4 rounded-2xl glass-card text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition text-sm md:text-base shadow-2xl">
                         <i class="fa-solid fa-magnifying-glass absolute right-4 text-gray-400 text-lg"></i>
-                        <button onclick="performSearch()" class="absolute left-2 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-600 hover:to-red-800 active:scale-95 text-white px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition flex items-center gap-1.5 shadow-lg glow-red">
+                        <button onclick="performSearch()" class="absolute left-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 active:scale-95 text-white px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition flex items-center gap-1.5 shadow-lg glow-green">
                             <span>بحث</span>
                             <i class="fa-solid fa-arrow-left text-[10px]"></i>
                         </button>
@@ -170,7 +170,7 @@
         <section id="genresSection" class="max-w-7xl mx-auto px-4 lg:px-8 py-4">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl md:text-2xl font-black text-white flex items-center gap-2">
-                    <i class="fa-solid fa-layer-group text-brand-red"></i> التصنيفات السينمائية
+                    <i class="fa-solid fa-layer-group text-emerald-400"></i> التصنيفات السينمائية
                 </h2>
             </div>
 
@@ -262,7 +262,7 @@
         <section class="max-w-7xl mx-auto px-4 lg:px-8 py-4">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-2.5 h-6 bg-brand-red rounded-full"></div>
+                    <div class="w-2.5 h-6 bg-emerald-500 rounded-full"></div>
                     <h2 id="sectionTitle" class="text-xl md:text-2xl font-bold text-white">الأفلام الشائعة والأكثر بحثاً</h2>
                 </div>
             </div>
@@ -278,10 +278,10 @@
     <div id="movieModal" onclick="closeModalOnBackdrop(event)" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div onclick="event.stopPropagation()" class="glass-modal w-full max-w-3xl rounded-3xl overflow-hidden relative shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
             
-            <!-- Sticky Header with Close Button -->
+            <!-- Sticky Header -->
             <div class="sticky top-0 z-30 bg-brand-dark/95 backdrop-blur-md px-5 py-3.5 border-b border-white/10 flex items-center justify-between">
-                <span class="text-xs font-bold text-brand-accent uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-info"></i> تفاصيل الفيلم والمشاهدة
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info"></i> EfrînFlix - تفاصيل الفيلم
                 </span>
                 <button onclick="closeModal()" class="bg-brand-red/90 hover:bg-brand-red active:scale-95 text-white px-3.5 py-1.5 rounded-full font-bold text-xs flex items-center gap-1 shadow-lg transition">
                     <span>إغلاق</span>
@@ -296,7 +296,7 @@
         </div>
     </div>
 
-    <!-- Full Movie Player Modal (مشغل الفيلم الكامل) -->
+    <!-- Full Movie Player Modal (With Anti-Ad Sandbox) -->
     <div id="fullMoviePlayerModal" onclick="closeFullMoviePlayerOnBackdrop(event)" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-lg flex items-center justify-center p-2 sm:p-6">
         <div onclick="event.stopPropagation()" class="w-full max-w-4xl bg-brand-dark rounded-3xl overflow-hidden relative border border-white/20 shadow-2xl flex flex-col max-h-[95vh]">
             
@@ -307,7 +307,7 @@
                 <!-- Server Switcher Buttons -->
                 <div class="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/10 text-xs">
                     <span class="text-gray-400 font-bold px-1 hidden sm:inline">السيرفر:</span>
-                    <button id="serverBtn1" onclick="switchServer(1)" class="server-btn px-2.5 py-1 rounded-lg font-bold text-white bg-brand-red transition">سيرفر 1</button>
+                    <button id="serverBtn1" onclick="switchServer(1)" class="server-btn px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600 transition">سيرفر 1 (سريع)</button>
                     <button id="serverBtn2" onclick="switchServer(2)" class="server-btn px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white transition">سيرفر 2</button>
                     <button id="serverBtn3" onclick="switchServer(3)" class="server-btn px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white transition">سيرفر 3</button>
                 </div>
@@ -318,13 +318,13 @@
                 </button>
             </div>
             
-            <!-- Video Iframe Container -->
+            <!-- Video Iframe Container with Anti-Ad Sandbox Attributes -->
             <div class="relative aspect-video w-full bg-black flex items-center justify-center">
-                <iframe id="fullMovieIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+                <iframe id="fullMovieIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
             </div>
 
-            <div class="p-3 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px]">
-                💡 نصيحة: إذا لم يعمل السيرفر الأول، يمكنك اختيار <b>سيرفر 2</b> أو <b>سيرفر 3</b> بسهولة من الشريط العلوّي للمشغل.
+            <div class="p-3 bg-brand-card border-t border-white/10 text-center text-emerald-400 text-[11px] font-bold">
+                🛡️ تم تفعيل نظام منع الإعلانات والنوافذ المنبثقة تلقائياً في المشغل.
             </div>
         </div>
     </div>
@@ -366,10 +366,10 @@
     <footer class="border-t border-white/10 py-6 px-4 text-center text-gray-500 text-xs glass-header mt-12">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-                <span class="font-bold text-white">CineFinder Pro</span>
+                <span class="font-bold text-white">EfrînFlix Pro (إفرين فليكس)</span>
                 <span>— جميع الحقوق محفوظة &copy; 2026</span>
             </div>
-            <p>مشغل سينمائي متكامل مرتبط بأحدث منصات البث العالمي.</p>
+            <p>منصة سينمائية بدون إعلانات منبثقة.</p>
         </div>
     </footer>
 
@@ -380,7 +380,7 @@
         const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
         let currentMovies = [];
-        let watchlist = JSON.parse(localStorage.getItem('cinefinder_watchlist') || '[]');
+        let watchlist = JSON.parse(localStorage.getItem('efrinflix_watchlist') || '[]');
         let currentPlayingMovieId = null;
 
         const genreNamesMap = {
@@ -393,7 +393,6 @@
             updateWatchlistUI();
         });
 
-        // Fetch Popular
         async function fetchPopularMovies() {
             document.getElementById('sectionTitle').innerText = "الأفلام الشائعة والأكثر بحثاً";
             try {
@@ -408,7 +407,6 @@
             }
         }
 
-        // Select Genre
         async function selectGenre(genreId, genreName) {
             document.getElementById('sectionTitle').innerText = `أفلام تصنيف: ${genreName}`;
             try {
@@ -423,7 +421,6 @@
             }
         }
 
-        // Render Movies
         function renderMovies(movies) {
             const grid = document.getElementById('movieGrid');
             grid.innerHTML = '';
@@ -448,12 +445,10 @@
                     <div class="relative aspect-[2/3] overflow-hidden">
                         <img src="${poster}" alt="${movie.title}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
                         
-                        <!-- Top Rating Badge -->
                         <div class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-amber-400 px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 border border-white/10">
                             <i class="fa-solid fa-star"></i> ${rating}
                         </div>
 
-                        <!-- Bookmark Quick Button -->
                         <button onclick="event.stopPropagation(); toggleWatchlist(${movie.id})" class="absolute top-2.5 left-2.5 bg-black/60 hover:bg-black/90 text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-white/10">
                             <i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'} text-xs"></i>
                         </button>
@@ -463,7 +458,7 @@
                         <h3 class="font-bold text-white text-xs md:text-sm truncate">${movie.title}</h3>
                         <div class="flex items-center justify-between text-[11px] text-gray-400 mt-1.5">
                             <span>${year}</span>
-                            <span class="text-brand-accent font-semibold">${getGenreBadgeName(movie.genre_ids)}</span>
+                            <span class="text-emerald-400 font-semibold">${getGenreBadgeName(movie.genre_ids)}</span>
                         </div>
                     </div>
                 `;
@@ -476,7 +471,6 @@
             return genreNamesMap[genreIds[0]] || 'فيلم';
         }
 
-        // Perform Search
         async function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if(!query) return;
@@ -515,23 +509,17 @@
                 });
         }
 
-        // Open Movie Details Modal
         async function openMovieDetails(movieId) {
             const modal = document.getElementById('movieModal');
             const content = document.getElementById('modalContent');
 
-            content.innerHTML = `<div class="text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl text-brand-red"></i><p class="mt-2 text-sm">جاري جلب تفاصيل الفيلم والرابط...</p></div>`;
+            content.innerHTML = `<div class="text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-400"></i><p class="mt-2 text-sm">جاري جلب تفاصيل الفيلم...</p></div>`;
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
             try {
-                const [movieRes, providersRes] = await Promise.all([
-                    fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ar-SA`),
-                    fetch(`${BASE_URL}/movie/${movieId}/watch/providers?api_key=${API_KEY}`)
-                ]);
-
-                const movie = await movieRes.json();
-                const providersData = await providersRes.json();
+                const res = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ar-SA`);
+                const movie = await res.json();
 
                 const poster = movie.poster_path ? `${IMAGE_BASE}${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Cover';
                 const year = movie.release_date ? movie.release_date.split('-')[0] : 'غير محدد';
@@ -554,9 +542,7 @@
 
                             <p class="text-gray-300 text-xs sm:text-sm leading-relaxed text-justify">${movie.overview || 'لا يوجد وصف متاح للفيلم.'}</p>
 
-                            <!-- Actions -->
                             <div class="flex flex-wrap gap-2.5 pt-2 justify-center sm:justify-start">
-                                <!-- Big Green Full Movie Player Button -->
                                 <button onclick="openFullMoviePlayer(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm transition flex items-center gap-2 shadow-lg glow-green">
                                     <i class="fa-solid fa-circle-play text-base"></i> مشاهدة الفيلم الآن 🎬
                                 </button>
@@ -567,7 +553,7 @@
 
                                 <button onclick="toggleWatchlist(${movie.id})" class="glass-card hover:bg-white/10 text-white px-3.5 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 border border-white/10">
                                     <i class="fa-solid ${isSaved ? 'fa-check text-emerald-400' : 'fa-bookmark text-brand-gold'}"></i> 
-                                    <span>${isSaved ? 'محفوظ' : 'للمفضلة'}</span>
+                                    <span>${isSaved ? 'محفوظ' : 'المفضلة'}</span>
                                 </button>
                             </div>
                         </div>
@@ -579,7 +565,6 @@
             }
         }
 
-        // Open Full Movie Player
         function openFullMoviePlayer(movieId, title) {
             currentPlayingMovieId = movieId;
             document.getElementById('fullPlayerTitle').innerText = `مشاهدة فيلم: ${title}`;
@@ -588,18 +573,15 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Server Switcher Function
         function switchServer(serverNum) {
             if(!currentPlayingMovieId) return;
             const iframe = document.getElementById('fullMovieIframe');
             
-            // Highlight Buttons
             document.querySelectorAll('.server-btn').forEach(btn => {
                 btn.className = "server-btn px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white transition";
             });
-            document.getElementById(`serverBtn${serverNum}`).className = "server-btn px-2.5 py-1 rounded-lg font-bold text-white bg-brand-red transition";
+            document.getElementById(`serverBtn${serverNum}`).className = "server-btn px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600 transition";
 
-            // Set Embed Sources
             if(serverNum === 1) {
                 iframe.src = `https://vidsrc.me/embed/movie?tmdb=${currentPlayingMovieId}`;
             } else if(serverNum === 2) {
@@ -628,7 +610,6 @@
             if(e.target.id === 'movieModal') closeModal();
         }
 
-        // Play Trailer
         async function playTrailer(movieId, title) {
             const playerModal = document.getElementById('playerModal');
             const iframe = document.getElementById('videoIframe');
@@ -660,7 +641,6 @@
             if(e.target.id === 'playerModal') closePlayerModal();
         }
 
-        // Watchlist
         function toggleWatchlist(movieId) {
             const movie = currentMovies.find(m => m.id === movieId);
             if(!movie) return;
@@ -672,7 +652,7 @@
                 watchlist.push(movie);
             }
 
-            localStorage.setItem('cinefinder_watchlist', JSON.stringify(watchlist));
+            localStorage.setItem('efrinflix_watchlist', JSON.stringify(watchlist));
             updateWatchlistUI();
             renderMovies(currentMovies);
         }
