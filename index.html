@@ -99,7 +99,6 @@
             z-index: 0;
         }
 
-        /* Hero Backdrop Gradient Overlay */
         .hero-overlay {
             background: linear-gradient(0deg, #080C14 0%, rgba(8,12,20,0.85) 50%, rgba(8,12,20,0.4) 100%);
         }
@@ -146,7 +145,7 @@
     </header>
 
     <main class="flex-grow">
-        <!-- Dynamic Featured Banner / Hero Section -->
+        <!-- Banner Section -->
         <section id="heroSection" class="relative w-full min-h-[420px] md:min-h-[500px] flex items-end pb-8 px-4 lg:px-8 overflow-hidden bg-cover bg-center transition-all duration-700">
             <div class="absolute inset-0 hero-overlay"></div>
 
@@ -163,13 +162,9 @@
                     ...
                 </p>
 
-                <!-- Hero Actions & Search Bar Grid -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-                    <div class="flex items-center gap-3" id="heroActionBtns">
-                        <!-- Buttons injected dynamically -->
-                    </div>
+                    <div class="flex items-center gap-3" id="heroActionBtns"></div>
 
-                    <!-- Search Input Box -->
                     <div class="relative w-full md:w-80">
                         <input type="text" id="searchInput" placeholder="ابحث عن فيلم أو مسلسل..." 
                             oninput="handleSearchInput(event)"
@@ -181,7 +176,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Category Chips -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 text-[11px] font-bold">
                     <button onclick="quickFilter('trending')" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-xl whitespace-nowrap hover:bg-emerald-500/30">🔥 الشائع الآن</button>
                     <button onclick="quickFilter('action')" class="glass-card text-gray-300 px-3 py-1 rounded-xl whitespace-nowrap hover:text-white">🎬 أكشن</button>
@@ -192,7 +186,7 @@
             </div>
         </section>
 
-        <!-- Continue Watching Bar (Appears if user watched something before) -->
+        <!-- Continue Watching Section -->
         <section id="continueWatchingSection" class="hidden max-w-7xl mx-auto px-4 lg:px-8 mt-6">
             <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
@@ -210,7 +204,7 @@
             </div>
         </section>
 
-        <!-- Filters Bar Section -->
+        <!-- Main Display & Filters -->
         <section class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
             <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card/50 p-3 rounded-2xl border border-white/5">
                 <div class="flex items-center gap-2">
@@ -237,12 +231,10 @@
                 </div>
             </div>
 
-            <!-- Dynamic Media Grid -->
-            <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-6 mt-6">
-                <!-- Skeleton Loader injected automatically -->
-            </div>
+            <!-- Media Grid -->
+            <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-6 mt-6"></div>
 
-            <!-- Pagination & Stats -->
+            <!-- Pagination -->
             <div class="mt-10 flex flex-col items-center gap-4">
                 <span id="pageStats" class="text-xs text-gray-400 font-semibold"></span>
                 <button id="loadMoreBtn" onclick="loadNextPage()" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-8 py-3 rounded-2xl shadow-xl transition active:scale-95 text-xs md:text-sm flex items-center gap-2 border border-emerald-500/30">
@@ -264,28 +256,29 @@
                     <span>إغلاق</span> <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
-            <div id="detailsContent" class="overflow-y-auto p-5 md:p-8 space-y-6 no-scrollbar">
-                <!-- Injected JS Content -->
-            </div>
+            <div id="detailsContent" class="overflow-y-auto p-5 md:p-8 space-y-6 no-scrollbar"></div>
         </div>
     </div>
 
-    <!-- Video Player Modal -->
+    <!-- Video Player Modal (Updated With New Servers) -->
     <div id="playerModal" onclick="closeModalOnBackdrop(event, 'playerModal')" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-lg flex items-center justify-center p-2 sm:p-6">
         <div onclick="event.stopPropagation()" class="w-full max-w-5xl bg-brand-dark rounded-3xl overflow-hidden relative border border-white/20 shadow-2xl flex flex-col max-h-[95vh]">
             
             <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-brand-card border-b border-white/10 gap-2">
-                <h3 id="playerTitle" class="font-bold text-white text-xs sm:text-base truncate max-w-[180px] sm:max-w-sm">مشاهدة العمل</h3>
+                <h3 id="playerTitle" class="font-bold text-white text-xs sm:text-base truncate max-w-[150px] sm:max-w-xs">مشاهدة العمل</h3>
                 
                 <div id="tvSelectors" class="hidden flex items-center gap-2">
                     <select id="seasonSelect" onchange="updateEpisodeSelector()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg focus:outline-none"></select>
                     <select id="episodeSelect" onchange="changeTvEpisode()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg focus:outline-none"></select>
                 </div>
 
-                <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-xs">
-                    <button id="srv1" onclick="switchServer(1)" class="px-2 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1</button>
-                    <button id="srv2" onclick="switchServer(2)" class="px-2 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2</button>
-                    <button id="srv3" onclick="switchServer(3)" class="px-2 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3</button>
+                <!-- قائمة السيرفرات القوية والجديدة -->
+                <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] overflow-x-auto no-scrollbar">
+                    <button id="srv1" onclick="switchServer(1)" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1 (سريع)</button>
+                    <button id="srv2" onclick="switchServer(2)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2 (EmbedSu)</button>
+                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (VidsrcPro)</button>
+                    <button id="srv4" onclick="switchServer(4)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 4 (AutoEmbed)</button>
+                    <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (2Embed)</button>
                 </div>
 
                 <button onclick="closePlayerModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-bold transition">إغلاق <i class="fa-solid fa-xmark"></i></button>
@@ -299,21 +292,20 @@
 
                 <div id="adShield" onclick="removeAdShield()" class="absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center">
                     <div class="bg-black/80 backdrop-blur-md text-white text-xs px-4 py-2 rounded-2xl border border-emerald-500/40 shadow-2xl pointer-events-none flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-400 animate-pulse"></i> انقر هنا لبدء التشغيل الآمن
+                        <i class="fa-solid fa-shield-halved text-emerald-400 animate-pulse"></i> انقر هنا للتشغيل (إذا واجهت مشكلة غيّر السيرفر)
                     </div>
                 </div>
 
-                <!-- تم تصحيح هذا السطر وإزالة خاصية sandbox منه لتشغيل المشغل بدون أخطاء -->
                 <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
 
             <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px]">
-                🛡️ وضع الحماية مفعل. إذا تعطل السيرفر جرب الانتقال إلى سيرفر آخر من الشريط العلوي.
+                💡 في حال لم يعمل أحد السيرفرات بشكل جيد، جرب التبديل لسيرفر آخر من القائمة في الأعلى.
             </div>
         </div>
     </div>
 
-    <!-- Movie Roulette Wheel Modal -->
+    <!-- Roulette Modal -->
     <div id="rouletteModal" onclick="closeModalOnBackdrop(event, 'rouletteModal')" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
         <div onclick="event.stopPropagation()" class="glass-modal w-full max-w-md rounded-3xl p-6 relative border border-white/20 text-center space-y-4">
             <h3 class="text-xl font-black text-white flex items-center justify-center gap-2"><i class="fa-solid fa-dice text-amber-400"></i> عجلة الاقتراح العشوائي</h3>
@@ -355,7 +347,7 @@
 
     <!-- JS Application Logic -->
     <script>
-        // Intercept popups
+        // Intercept Popups
         window.open = function () {
             console.log("🛡 تم حظر نافذة منبثقة إعلانية");
             return { closed: true, close: () => {}, focus: () => {}, blur: () => {} };
@@ -371,7 +363,7 @@
             if (shield) shield.style.display = 'flex';
         }
 
-        // --- Configuration & Global State ---
+        // --- Config & State ---
         const API_KEY = "fca02c6813f7dc2ace00bca1009e315a"; 
         const BASE_URL = "https://api.themoviedb.org/3";
         const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
@@ -404,7 +396,6 @@
             checkContinueWatching();
         });
 
-        // Toast Notification System
         function showToast(message, icon = "fa-circle-check", colorClass = "text-emerald-400") {
             const toast = document.getElementById('toastNotification');
             const msg = document.getElementById('toastMessage');
@@ -417,7 +408,6 @@
             setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3200);
         }
 
-        // Fetch Dynamic Hero Banner
         async function fetchHeroMedia() {
             try {
                 const res = await fetch(`${BASE_URL}/trending/${currentType}/day?api_key=${API_KEY}&language=ar-SA`);
@@ -442,9 +432,7 @@
                         </button>
                     `;
                 }
-            } catch (e) {
-                console.error("Error fetching hero:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         function switchMediaType(type) {
@@ -463,7 +451,6 @@
             genresList[currentType].forEach(g => { select.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
         }
 
-        // Quick Tag Filters
         function quickFilter(type) {
             if (type === 'action') document.getElementById('genreFilter').value = currentType === 'movie' ? 28 : 10759;
             else if (type === 'scifi') document.getElementById('genreFilter').value = currentType === 'movie' ? 878 : 10765;
@@ -474,7 +461,6 @@
             fetchMedia();
         }
 
-        // Skeleton Loader Rendering
         function renderSkeletonLoader() {
             const grid = document.getElementById('mediaGrid');
             grid.innerHTML = '';
@@ -518,7 +504,6 @@
                 
                 if(currentPage < totalPages) loadBtn.classList.remove('hidden');
                 else loadBtn.classList.add('hidden');
-                
             } catch (e) {
                 document.getElementById('mediaGrid').innerHTML = `<div class="col-span-full text-center text-red-500 py-6">حدث خطأ أثناء جلب البيانات.</div>`;
             }
@@ -555,11 +540,7 @@
             document.getElementById('pageStats').innerText = `الصفحة ${currentPage} من ${totalPages}`;
         }
 
-        // Search Logic
-        function handleSearchInput() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { performSearch(); }, 600);
-        }
+        function handleSearchInput() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { performSearch(); }, 600); }
         function performSearch() { currentPage = 1; fetchMedia(); }
         function applyFilters() { currentPage = 1; fetchMedia(); }
         function resetToHome() { document.getElementById('searchInput').value = ''; currentPage = 1; fetchMedia(); }
@@ -581,7 +562,6 @@
             if (currentPage < totalPages) container.appendChild(createBtn(currentPage + 1, "التالي"));
         }
 
-        // Details Modal & Web Share API
         async function openDetailsModal(id) {
             const modal = document.getElementById('detailsModal');
             const content = document.getElementById('detailsContent');
@@ -635,12 +615,9 @@
                             </div>
                         </div>
                     </div>`;
-            } catch (e) {
-                content.innerHTML = `<p class="text-center text-red-400 py-6 text-xs">فشل تحميل التفاصيل.</p>`;
-            }
+            } catch (e) { content.innerHTML = `<p class="text-center text-red-400 py-6 text-xs">فشل تحميل التفاصيل.</p>`; }
         }
 
-        // Share API
         function shareMedia(title) {
             const shareData = { title: title, text: `شاهد ${title} مجاناً على EfrînFlix Pro:`, url: window.location.href };
             if (navigator.share) {
@@ -651,7 +628,6 @@
             }
         }
 
-        // Continue Watching Feature
         function saveContinueWatching(id, title) {
             const watchData = { id, title, type: currentType, time: new Date().getTime() };
             localStorage.setItem('efrinflix_last_watched', JSON.stringify(watchData));
@@ -665,12 +641,10 @@
                 document.getElementById('continueTitle').innerText = last.title;
                 document.getElementById('continueBtn').onclick = () => openPlayerModal(last.id, last.title);
                 sec.classList.remove('hidden');
-            } else {
-                sec.classList.add('hidden');
-            }
+            } else { sec.classList.add('hidden'); }
         }
 
-        // Player Logic
+        // --- Video Player & New High Quality Servers Setup ---
         function openPlayerModal(id, title, seasonsCount = 1) {
             closeModal('detailsModal');
             activePlayingItem = { id, type: currentType, season: 1, episode: 1, title };
@@ -726,25 +700,42 @@
             switchServer(1);
         }
 
+        // دالة التبديل بين السيرفرات السريعة والمستقرة
         function switchServer(srvNum) {
             const iframe = document.getElementById('videoIframe');
             const { id, type, season, episode } = activePlayingItem;
             resetAdShield();
 
-            [1, 2, 3].forEach(n => {
-                document.getElementById(`srv${n}`).className = n === srvNum ? "px-2 py-1 rounded-lg font-bold text-white bg-emerald-600" : "px-2 py-1 rounded-lg font-bold text-gray-300 hover:text-white";
+            // تحديث تصميم أزرار السيرفرات
+            [1, 2, 3, 4, 5].forEach(n => {
+                const btn = document.getElementById(`srv${n}`);
+                if (btn) {
+                    btn.className = n === srvNum 
+                        ? "px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600 shadow" 
+                        : "px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white";
+                }
             });
 
             iframe.src = '';
             setTimeout(() => {
                 if (type === 'movie') {
-                    if (srvNum===1) iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
-                    else if (srvNum===2) iframe.src = `https://vidsrc.to/embed/movie/${id}`;
-                    else iframe.src = `https://autoembed.co/movie/tmdb/${id}`;
+                    switch(srvNum) {
+                        case 1: iframe.src = `https://vidlink.pro/movie/${id}`; break;
+                        case 2: iframe.src = `https://embed.su/embed/movie/${id}`; break;
+                        case 3: iframe.src = `https://vidsrc.pro/embed/movie/${id}`; break;
+                        case 4: iframe.src = `https://player.autoembed.cc/embed/movie/${id}`; break;
+                        case 5: iframe.src = `https://www.2embed.cc/embed/${id}`; break;
+                        default: iframe.src = `https://vidlink.pro/movie/${id}`;
+                    }
                 } else {
-                    if (srvNum===1) iframe.src = `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`;
-                    else if (srvNum===2) iframe.src = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
-                    else iframe.src = `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`;
+                    switch(srvNum) {
+                        case 1: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`; break;
+                        case 2: iframe.src = `https://embed.su/embed/tv/${id}/${season}/${episode}`; break;
+                        case 3: iframe.src = `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`; break;
+                        case 4: iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`; break;
+                        case 5: iframe.src = `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`; break;
+                        default: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+                    }
                 }
             }, 100);
         }
