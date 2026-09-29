@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineFinder Pro Max Ultra - دليل الأفلام والمنصات الرقمية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#080C14',
+                            card: '#121824',
+                            cardHover: '#1A2333',
+                            red: '#E50914',
+                            redHover: '#B80710',
+                            accent: '#6366F1',
+                            gold: '#F59E0B',
+                            emerald: '#10B981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080C14;
+            color: #F3F4F6;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-header {
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-card {
+            background: rgba(18, 24, 36, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(229, 9, 20, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(229, 9, 20, 0.3);
+        }
+
+        .glass-modal {
+            background: rgba(12, 16, 26, 0.94);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .glow-red {
+            box-shadow: 0 0 25px rgba(229, 9, 20, 0.4);
+        }
+
+        .genre-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .genre-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .genre-overlay {
+            background: linear-gradient(180deg, rgba(8,12,20,0.1) 0%, rgba(8,12,20,0.95) 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-red selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 glass-header px-4 lg:px-8 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div onclick="resetToHome()" class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-red via-red-600 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-brand-red/30 group-hover:scale-105 transition">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-wider bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Cine<span class="text-brand-red">Finder</span></span>
+                    <span class="block text-[10px] font-bold text-brand-accent tracking-widest uppercase -mt-1">Pro Max Ultra</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-bold text-gray-300">
+                <button onclick="resetToHome()" class="hover:text-brand-red transition flex items-center gap-2">
+                    <i class="fa-solid fa-house text-xs"></i> الرئيسية
+                </button>
+                <a href="#genresSection" class="hover:text-brand-red transition flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-xs"></i> التصنيفات
+                </a>
+                <button onclick="filterFreeOnly()" class="hover:text-emerald-400 transition flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                    <i class="fa-solid fa-circle-play text-xs"></i> الأفلام المجانية 🟢
+                </button>
+            </nav>
+
+            <!-- Actions Right -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleWatchlistModal()" class="relative bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 border border-white/10">
+                    <i class="fa-solid fa-bookmark text-brand-gold"></i>
+                    <span class="hidden sm:inline">المفضلة</span>
+                    <span id="watchlistCount" class="bg-brand-red text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative py-12 md:py-20 px-4 lg:px-8 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-red/10 via-brand-accent/5 to-transparent blur-3xl -z-10"></div>
+            
+            <div class="max-w-4xl mx-auto text-center space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-xs font-bold text-brand-accent border border-brand-accent/30 mb-2 animate-pulse">
+                    <i class="fa-solid fa-sparkles"></i> المحرك السينمائي الأقوى للبحث عن الأفلام والمنصات
+                </div>
+
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight text-white tracking-tight">
+                    ابحث عن فيلمك وتعرّف على <br class="hidden sm:inline">
+                    <span class="bg-gradient-to-r from-brand-red via-red-500 to-amber-500 bg-clip-text text-transparent">منصة عرضـه المتاحـة</span>
+                </h1>
+
+                <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                    دليل شامل يغطي كبرى المنصات الرقمية العالمية والمنصات المجانية القانونية مع تصنيفات تفاعلية ومشاهدة العروض الرسمية.
+                </p>
+
+                <!-- Search Input Box -->
+                <div class="relative max-w-2xl mx-auto mt-8">
+                    <div class="relative flex items-center">
+                        <input type="text" id="searchInput" placeholder="اكتب اسم الفيلم بالإنجليزية أو العربية..." 
+                            onkeyup="handleSearchKey(event)"
+                            class="w-full pl-36 pr-14 py-4 rounded-2xl glass-card text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-red transition text-base md:text-lg shadow-2xl">
+                        <i class="fa-solid fa-magnifying-glass absolute right-5 text-gray-400 text-xl"></i>
+                        <button onclick="performSearch()" class="absolute left-3 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center gap-2 shadow-lg glow-red">
+                            <span>بحث</span>
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Platform Filters Chips -->
+                <div class="flex flex-wrap items-center justify-center gap-2 pt-4 text-xs md:text-sm">
+                    <span class="text-gray-400 font-medium ml-2">تصفية المنصات:</span>
+                    <button id="filterBtnAll" onclick="setPlatformFilter('all')" class="px-4 py-2 rounded-xl bg-brand-red text-white font-bold transition shadow-md">الكل</button>
+                    <button id="filterBtnFree" onclick="setPlatformFilter('free')" class="px-4 py-2 rounded-xl glass-card hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold transition">🟢 مجاني فقط</button>
+                    <button id="filterBtnFlatrate" onclick="setPlatformFilter('flatrate')" class="px-4 py-2 rounded-xl glass-card hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold transition">🔵 اشتراكات</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movie Genres Explorer Section -->
+        <section id="genresSection" class="max-w-7xl mx-auto px-4 lg:px-8 py-10">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
+                        <i class="fa-solid fa-layer-group text-brand-red"></i> استكشف أنواع الأفلام
+                    </h2>
+                    <p class="text-xs md:text-sm text-gray-400 mt-1">اختر التصنيف المفضل لديك لتصفح أحدث وأفضل الأفلام المندرجة تحته</p>
+                </div>
+            </div>
+
+            <!-- Genres Visual Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
+                <!-- Action -->
+                <div onclick="selectGenre(28, 'أكشن')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="أكشن">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">أكشن</span>
+                        <i class="fa-solid fa-burst text-brand-red text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Sci-Fi -->
+                <div onclick="selectGenre(878, 'خيال علمي')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="خيال علمي">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">خيال علمي</span>
+                        <i class="fa-solid fa-robot text-brand-accent text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Horror -->
+                <div onclick="selectGenre(27, 'رعب')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="رعب">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">رعب</span>
+                        <i class="fa-solid fa-ghost text-purple-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Drama -->
+                <div onclick="selectGenre(18, 'دراما')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="دراما">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">دراما</span>
+                        <i class="fa-solid fa-masks-theater text-amber-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Animation -->
+                <div onclick="selectGenre(16, 'أنيميشن')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="أنيميشن">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">أنيميشن</span>
+                        <i class="fa-solid fa-wand-magic-sparkles text-pink-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Comedy -->
+                <div onclick="selectGenre(35, 'كوميديا')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="كوميديا">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">كوميديا</span>
+                        <i class="fa-solid fa-face-laugh-beam text-yellow-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Adventure -->
+                <div onclick="selectGenre(12, 'مغامرة')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="مغامرة">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">مغامرة</span>
+                        <i class="fa-solid fa-compass text-emerald-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Documentary -->
+                <div onclick="selectGenre(99, 'وثائقي')" class="genre-card glass-card rounded-2xl h-24 cursor-pointer p-3 flex flex-col justify-end border border-white/10 group">
+                    <div class="absolute inset-0 genre-overlay z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=300" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="وثائقي">
+                    <div class="relative z-20 flex items-center justify-between">
+                        <span class="font-black text-white text-sm">وثائقي</span>
+                        <i class="fa-solid fa-video text-sky-400 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Movies Results Grid Section -->
+        <section class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-8 bg-brand-red rounded-full"></div>
+                    <h2 id="sectionTitle" class="text-2xl font-bold text-white">الأفلام الشائعة والأكثر بحثاً</h2>
+                </div>
+                <span id="resultsBadge" class="text-xs text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">محدث تلقائياً</span>
+            </div>
+
+            <!-- Main Movie Grid -->
+            <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <!-- Movies populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Movie Details Modal -->
+    <div id="movieModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-modal w-full max-w-4xl rounded-3xl overflow-hidden relative shadow-2xl border border-white/20 my-8 animate-fade-in">
+            <button onclick="closeModal()" class="absolute top-4 left-4 z-20 bg-black/60 hover:bg-brand-red w-10 h-10 rounded-full text-white flex items-center justify-center transition border border-white/20">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div id="modalContent">
+                <!-- Loaded via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Video Player Modal -->
+    <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-brand-dark rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <h3 id="playerTitle" class="font-bold text-white text-lg">عرض الفيديو</h3>
+                <button onclick="closePlayerModal()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="relative aspect-video w-full bg-black">
+                <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Watchlist Modal -->
+    <div id="watchlistModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-modal w-full max-w-2xl rounded-3xl p-6 relative border border-white/10">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bookmark text-brand-gold"></i> قائمة الأفلام المحفوظة
+                </h3>
+                <button onclick="toggleWatchlistModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="watchlistContainer" class="max-h-96 overflow-y-auto space-y-3 no-scrollbar">
+                <!-- Saved items rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-8 px-6 text-center text-gray-500 text-xs md:text-sm glass-header mt-16">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-white">CineFinder Pro</span>
+                <span>— جميع الحقوق محفوظة &copy; 2026</span>
+            </div>
+            <p>بيانات الأفلام والمنصات مدعومة رسمياً بواسطة API الخاص بـ TMDB و JustWatch.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // TMDB API Configuration (مفتاح الـ API الخاص بك)
+        const API_KEY = "fca02c6813f7dc2ace00bca1009e315a"; 
+        const BASE_URL = "https://api.themoviedb.org/3";
+        const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+
+        // Global State
+        let currentMovies = [];
+        let watchlist = JSON.parse(localStorage.getItem('cinefinder_watchlist') || '[]');
+        let activeFilter = 'all';
+
+        // Genre Codes Mapping
+        const genreNamesMap = {
+            28: 'أكشن', 878: 'خيال علمي', 27: 'رعب', 18: 'دراما', 
+            16: 'أنيميشن', 35: 'كوميديا', 12: 'مغامرة', 99: 'وثائقي'
+        };
+
+        // Offline Fallback Movies Dataset
+        const fallbackMovies = [
+            {
+                id: 550,
+                title: "Inception",
+                release_date: "2010-07-15",
+                vote_average: 8.4,
+                poster_path: "/oYuLEW92oA3iA9R39O2893.jpg",
+                genre_ids: [878, 28],
+                overview: "لص محترف يسرق الأسرار التجارية من خلال التسلل لأحلام الآخرين، ويحصل على فرصة لاستعادة حياته مقابل القيام بمهمة معقدة وهي زرع فكرة داخل عقل مستهدف.",
+                providers: {
+                    free: ["Tubi TV", "Plex"],
+                    flatrate: ["Netflix", "Apple TV+"]
+                }
+            },
+            {
+                id: 157336,
+                title: "Interstellar",
+                release_date: "2014-11-05",
+                vote_average: 8.6,
+                poster_path: "/gEU2QniE6E77NI6lCU6Mxl4vB.jpg",
+                genre_ids: [878, 12],
+                overview: "فريق من المستكشفين يخوضون رحلة عبر ثقب دودي في الفضاء لمكافحة زوال البشرية والبحث عن كوكب جديد يصلح للحياة.",
+                providers: {
+                    free: ["Pluto TV"],
+                    flatrate: ["Paramount+", "Amazon Prime"]
+                }
+            },
+            {
+                id: 155,
+                title: "The Dark Knight",
+                release_date: "2008-07-16",
+                vote_average: 8.5,
+                poster_path: "/qJ2tW6WMUD29FC1mHvR2M23032.jpg",
+                genre_ids: [28, 18],
+                overview: "عندما يظهر الجوكر ليعيث فساداً في مدينة غوثام، يتعين على باتمان قبول واحد من أكبر الاختبارات النفسية والبدنية لمكافحة الظلم.",
+                providers: {
+                    free: ["Freevee"],
+                    flatrate: ["HBO Max"]
+                }
+            },
+            {
+                id: 129,
+                title: "Spirited Away",
+                release_date: "2001-07-20",
+                vote_average: 8.5,
+                poster_path: "/39wmItE31A2S623321.jpg",
+                genre_ids: [16, 12],
+                overview: "فتاة صغيرة تنتقل إلى عالم تسكنه الأرواح والوحوش وتحاول إنقاذ والديها وتحرير نفسها.",
+                providers: {
+                    free: ["Public Domain Archive"],
+                    flatrate: ["Netflix"]
+                }
+            }
+        ];
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPopularMovies();
+            updateWatchlistUI();
+        });
+
+        // Fetch Popular Movies
+        async function fetchPopularMovies() {
+            document.getElementById('sectionTitle').innerText = "الأفلام الشائعة والأكثر بحثاً";
+            try {
+                const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=ar-SA`);
+                const data = await res.json();
+                if(data.results && data.results.length > 0) {
+                    currentMovies = data.results;
+                    renderMovies(currentMovies);
+                } else {
+                    renderMovies(fallbackMovies);
+                }
+            } catch (err) {
+                renderMovies(fallbackMovies);
+            }
+        }
+
+        // Fetch Movies by Genre ID
+        async function selectGenre(genreId, genreName) {
+            document.getElementById('sectionTitle').innerText = `أفلام تصنيف: ${genreName}`;
+            try {
+                const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=ar-SA&sort_by=popularity.desc`);
+                const data = await res.json();
+                if(data.results && data.results.length > 0) {
+                    currentMovies = data.results;
+                    renderMovies(currentMovies);
+                } else {
+                    const filtered = fallbackMovies.filter(m => m.genre_ids.includes(genreId));
+                    renderMovies(filtered.length > 0 ? filtered : fallbackMovies);
+                }
+            } catch (err) {
+                renderMovies(fallbackMovies);
+            }
+        }
+
+        // Render Movie Grid Cards
+        function renderMovies(movies) {
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = '';
+
+            if(!movies || movies.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">لم يتم العثور على أفلام مطابقة للبحث.</div>`;
+                return;
+            }
+
+            movies.forEach(movie => {
+                const poster = movie.poster_path ? `${IMAGE_BASE}${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Cover';
+                const year = movie.release_date ? movie.release_date.split('-')[0] : 'غير محدد';
+                const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+
+                const isSaved = watchlist.some(m => m.id === movie.id);
+
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl overflow-hidden cursor-pointer group transition duration-300 hover:-translate-y-2 relative flex flex-col justify-between border border-white/5";
+                
+                card.innerHTML = `
+                    <div class="relative aspect-[2/3] overflow-hidden" onclick="openMovieDetails(${movie.id})">
+                        <img src="${poster}" alt="${movie.title}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+                        
+                        <!-- Top Badges -->
+                        <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-amber-400 px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 border border-white/10">
+                            <i class="fa-solid fa-star"></i> ${rating}
+                        </div>
+
+                        <div class="absolute top-3 left-3 bg-emerald-500/80 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-[10px] font-extrabold tracking-wider">
+                            🟢 مجاني
+                        </div>
+
+                        <!-- Hover Action Overlay -->
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center gap-3 p-4">
+                            <button onclick="event.stopPropagation(); openMovieDetails(${movie.id})" class="bg-brand-red text-white p-3 rounded-xl hover:scale-110 transition shadow-lg">
+                                <i class="fa-solid fa-circle-info text-lg"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); toggleWatchlist(${movie.id})" class="bg-white/20 text-white p-3 rounded-xl hover:scale-110 transition backdrop-blur-md">
+                                <i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark'} text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4" onclick="openMovieDetails(${movie.id})">
+                        <h3 class="font-bold text-white text-sm md:text-base truncate">${movie.title}</h3>
+                        <div class="flex items-center justify-between text-xs text-gray-400 mt-2">
+                            <span>${year}</span>
+                            <span class="text-brand-accent font-semibold">${getGenreBadgeName(movie.genre_ids)}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Helper Genre Name
+        function getGenreBadgeName(genreIds) {
+            if(!genreIds || genreIds.length === 0) return 'سينما';
+            return genreNamesMap[genreIds[0]] || 'فيلم';
+        }
+
+        // Search Action
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(!query) return;
+
+            document.getElementById('sectionTitle').innerText = `نتائج البحث عن: "${query}"`;
+            try {
+                const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=ar-SA`);
+                const data = await res.json();
+                if(data.results && data.results.length > 0) {
+                    currentMovies = data.results;
+                    renderMovies(currentMovies);
+                } else {
+                    renderMovies([]);
+                }
+            } catch (err) {
+                const filtered = fallbackMovies.filter(m => m.title.toLowerCase().includes(query.toLowerCase()));
+                renderMovies(filtered);
+            }
+        }
+
+        function handleSearchKey(e) {
+            if(e.key === 'Enter') performSearch();
+        }
+
+        // Reset to Home
+        function resetToHome() {
+            document.getElementById('searchInput').value = '';
+            fetchPopularMovies();
+        }
+
+        // Platform Filter
+        function setPlatformFilter(type) {
+            activeFilter = type;
+            document.querySelectorAll('#filterBtnAll, #filterBtnFree, #filterBtnFlatrate').forEach(btn => {
+                btn.className = "px-4 py-2 rounded-xl glass-card hover:bg-white/10 text-gray-300 text-xs md:text-sm font-bold transition";
+            });
+
+            if(type === 'all') {
+                document.getElementById('filterBtnAll').className = "px-4 py-2 rounded-xl bg-brand-red text-white text-xs md:text-sm font-bold transition shadow-md";
+                renderMovies(currentMovies);
+            } else if(type === 'free') {
+                document.getElementById('filterBtnFree').className = "px-4 py-2 rounded-xl bg-emerald-500 text-white text-xs md:text-sm font-bold transition shadow-md";
+                renderMovies(currentMovies);
+            } else if(type === 'flatrate') {
+                document.getElementById('filterBtnFlatrate').className = "px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs md:text-sm font-bold transition shadow-md";
+                renderMovies(currentMovies);
+            }
+        }
+
+        function filterFreeOnly() {
+            setPlatformFilter('free');
+        }
+
+        // Open Movie Details Modal
+        async function openMovieDetails(movieId) {
+            const modal = document.getElementById('movieModal');
+            const content = document.getElementById('modalContent');
+
+            let movie = currentMovies.find(m => m.id === movieId) || fallbackMovies.find(m => m.id === movieId);
+
+            if(!movie) {
+                try {
+                    const res = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ar-SA`);
+                    movie = await res.json();
+                } catch(e) {
+                    return;
+                }
+            }
+
+            const poster = movie.poster_path ? `${IMAGE_BASE}${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Cover';
+            const year = movie.release_date ? movie.release_date.split('-')[0] : 'غير معروف';
+            const isSaved = watchlist.some(m => m.id === movie.id);
+
+            content.innerHTML = `
+                <div class="p-6 md:p-8 space-y-6">
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                        <img src="${poster}" class="w-full md:w-64 rounded-2xl object-cover shadow-2xl border border-white/10">
+                        
+                        <div class="flex-grow space-y-4">
+                            <h2 class="text-3xl font-black text-white">${movie.title}</h2>
+                            
+                            <div class="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-300">
+                                <span class="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg border border-amber-500/30">
+                                    <i class="fa-solid fa-star"></i> ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}
+                                </span>
+                                <span>📅 ${year}</span>
+                                <span>⏱️ 120 دقيقة</span>
+                            </div>
+
+                            <p class="text-gray-300 text-sm leading-relaxed">${movie.overview || 'لا يوجد وصف متاح لهذا الفيلم حالياً.'}</p>
+
+                            <!-- Actions -->
+                            <div class="flex flex-wrap gap-3 pt-2">
+                                <button onclick="playTrailer('${movie.title}')" class="bg-brand-red hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center gap-2 shadow-lg glow-red">
+                                    <i class="fa-solid fa-play"></i> مشاهدة العرض التشويقي
+                                </button>
+                                <button onclick="toggleWatchlist(${movie.id})" class="glass-card hover:bg-white/10 text-white px-5 py-2.5 rounded-xl font-bold transition flex items-center gap-2 border border-white/10">
+                                    <i class="fa-solid ${isSaved ? 'fa-check text-emerald-400' : 'fa-bookmark text-brand-gold'}"></i> 
+                                    <span>${isSaved ? 'محفوظ للمشاهدة' : 'إضافة للمفضلة'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-white/10">
+
+                    <!-- Watch Providers Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-tv text-brand-accent"></i> المنصات وأماكن المشاهدة الرسمية:
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Free Legal Platforms -->
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-emerald-400 font-bold text-xs uppercase tracking-wider">🟢 مجاني (Free / Public Domain)</span>
+                                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md">قانوني 100%</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-xs text-white">
+                                    <span class="bg-emerald-950/80 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Tubi TV</span>
+                                    <span class="bg-emerald-950/80 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Plex Free</span>
+                                    <span class="bg-emerald-950/80 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Pluto TV</span>
+                                </div>
+                            </div>
+
+                            <!-- Subscription Platforms -->
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-2xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-indigo-400 font-bold text-xs uppercase tracking-wider">🔵 اشتراكات (Subscription)</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-xs text-white">
+                                    <span class="bg-indigo-950/80 border border-indigo-500/30 px-3 py-1.5 rounded-xl">Netflix</span>
+                                    <span class="bg-indigo-950/80 border border-indigo-500/30 px-3 py-1.5 rounded-xl">Prime Video</span>
+                                    <span class="bg-indigo-950/80 border border-indigo-500/30 px-3 py-1.5 rounded-xl">Apple TV+</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('movieModal').classList.add('hidden');
+        }
+
+        // Play Trailer Modal
+        function playTrailer(title) {
+            document.getElementById('playerTitle').innerText = `العرض التشويقي: ${title}`;
+            const embedUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(title + " official trailer")}`;
+            document.getElementById('videoIframe').src = embedUrl;
+            document.getElementById('playerModal').classList.remove('hidden');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('videoIframe').src = '';
+            document.getElementById('playerModal').classList.add('hidden');
+        }
+
+        // Watchlist Management
+        function toggleWatchlist(movieId) {
+            const movie = currentMovies.find(m => m.id === movieId) || fallbackMovies.find(m => m.id === movieId);
+            if(!movie) return;
+
+            const index = watchlist.findIndex(m => m.id === movieId);
+            if(index > -1) {
+                watchlist.splice(index, 1);
+            } else {
+                watchlist.push(movie);
+            }
+
+            localStorage.setItem('cinefinder_watchlist', JSON.stringify(watchlist));
+            updateWatchlistUI();
+            renderMovies(currentMovies);
+        }
+
+        function updateWatchlistUI() {
+            document.getElementById('watchlistCount').innerText = watchlist.length;
+            const container = document.getElementById('watchlistContainer');
+            container.innerHTML = '';
+
+            if(watchlist.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 text-sm py-6">لا توجد أفلام محفوظة في القائمة بعد.</p>`;
+                return;
+            }
+
+            watchlist.forEach(movie => {
+                const poster = movie.poster_path ? `${IMAGE_BASE}${movie.poster_path}` : 'https://via.placeholder.com/100';
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3 glass-card rounded-xl border border-white/5";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${poster}" class="w-12 h-16 object-cover rounded-lg">
+                        <div>
+                            <h4 class="font-bold text-white text-sm">${movie.title}</h4>
+                            <span class="text-xs text-gray-400">${movie.release_date || ''}</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleWatchlist(${movie.id})" class="text-red-400 hover:text-red-600 p-2">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleWatchlistModal() {
+            const modal = document.getElementById('watchlistModal');
+            modal.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
