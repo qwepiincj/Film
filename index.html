@@ -303,11 +303,12 @@
                     </div>
                 </div>
 
-                <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                <!-- تم تصحيح هذا السطر وإزالة خاصية sandbox منه لتشغيل المشغل بدون أخطاء -->
+                <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
 
             <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px]">
-                🛡️ وضع الحماية الذكي مفعل. إذا تعطل السيرفر جرب الانتقال إلى سيرفر آخر من الشريط العلوي.
+                🛡️ وضع الحماية مفعل. إذا تعطل السيرفر جرب الانتقال إلى سيرفر آخر من الشريط العلوي.
             </div>
         </div>
     </div>
@@ -764,7 +765,7 @@
                 showToast("تمت إزالة العمل من المفضلة", "fa-circle-minus", "text-red-400");
             } else {
                 watchlist.push({ id, type: currentType, title: item?.title || item?.name || 'عمل مفضل', poster: item?.poster_path });
-                showToast("تم إحفاظ العمل بالمفضلة!", "fa-circle-check", "text-emerald-400");
+                showToast("تم حفظ العمل بالمفضلة!", "fa-circle-check", "text-emerald-400");
             }
 
             localStorage.setItem('efrinflix_watchlist_v2', JSON.stringify(watchlist));
