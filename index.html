@@ -284,7 +284,13 @@
                     <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (AutoEmbed)</button>
                 </div>
 
-                <button onclick="closePlayerModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-bold transition">إغلاق <i class="fa-solid fa-xmark"></i></button>
+                <div class="flex items-center gap-2">
+                    <!-- زر الفتح الخارجي لحل مشكلة iOS Safari -->
+                    <a id="externalPlayerBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">فتح خارجي</span>
+                    </a>
+                    <button onclick="closePlayerModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-bold transition">إغلاق <i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
             
             <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
@@ -299,12 +305,12 @@
                     </div>
                 </div>
 
-                <!-- إضافة referrerpolicy="no-referrer" لإيصال الإشارة بشكل آمن -->
+                <!-- إضافة referrerpolicy="no-referrer" وخصائص السماح التامة لتوافق Safari -->
                 <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="no-referrer"></iframe>
             </div>
 
             <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px] leading-relaxed">
-                💡 إذا واجهتك مشكلة في المشاهدة (شاشة سوداء أو تحميل مستمر)، يرجى <strong>إيقاف مانع الإعلانات (Ad-Blocker)</strong> أو التبديل إلى سيرفر آخر من القائمة أعلاه.
+                💡 إذا واجهتك مشكلة في المشاهدة على أجهزة iPhone/Safari، يمكنك النقر على زر <strong>"فتح خارجي"</strong> بالأعلى أو التبديل بين السيرفرات البديلة.
             </div>
         </div>
     </div>
@@ -705,10 +711,11 @@
             switchServer(currentServer);
         }
 
-        // دالة التبديل بين السيرفرات السريعة مع النطاقات الجديدة والمستقرة
+        // دالة التبديل بين السيرفرات السريعة وتعديل رابط الفتح الخارجي
         function switchServer(srvNum) {
             currentServer = srvNum;
             const iframe = document.getElementById('videoIframe');
+            const extBtn = document.getElementById('externalPlayerBtn');
             const { id, type, season, episode } = activePlayingItem;
 
             // تحديث تصميم أزرار السيرفرات
@@ -723,27 +730,32 @@
 
             // تفريغ المشغل أولاً لضمان عدم حدوث تداخل
             iframe.src = '';
+            let targetUrl = '';
             
-            setTimeout(() => {
-                if (type === 'movie') {
-                    switch(srvNum) {
-                        case 1: iframe.src = `https://vidlink.pro/movie/${id}`; break;
-                        case 2: iframe.src = `https://embed.su/embed/movie/${id}`; break;
-                        case 3: iframe.src = `https://vidsrc.vip/embed/movie/${id}`; break;
-                        case 4: iframe.src = `https://player.videasy.net/movie/${id}`; break;
-                        case 5: iframe.src = `https://player.autoembed.cc/embed/movie/${id}`; break;
-                        default: iframe.src = `https://vidlink.pro/movie/${id}`;
-                    }
-                } else {
-                    switch(srvNum) {
-                        case 1: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`; break;
-                        case 2: iframe.src = `https://embed.su/embed/tv/${id}/${season}/${episode}`; break;
-                        case 3: iframe.src = `https://vidsrc.vip/embed/tv/${id}/${season}/${episode}`; break;
-                        case 4: iframe.src = `https://player.videasy.net/tv/${id}/${season}/${episode}`; break;
-                        case 5: iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`; break;
-                        default: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-                    }
+            if (type === 'movie') {
+                switch(srvNum) {
+                    case 1: targetUrl = `https://vidlink.pro/movie/${id}`; break;
+                    case 2: targetUrl = `https://embed.su/embed/movie/${id}`; break;
+                    case 3: targetUrl = `https://vidsrc.vip/embed/movie/${id}`; break;
+                    case 4: targetUrl = `https://player.videasy.net/movie/${id}`; break;
+                    case 5: targetUrl = `https://player.autoembed.cc/embed/movie/${id}`; break;
+                    default: targetUrl = `https://vidlink.pro/movie/${id}`;
                 }
+            } else {
+                switch(srvNum) {
+                    case 1: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`; break;
+                    case 2: targetUrl = `https://embed.su/embed/tv/${id}/${season}/${episode}`; break;
+                    case 3: targetUrl = `https://vidsrc.vip/embed/tv/${id}/${season}/${episode}`; break;
+                    case 4: targetUrl = `https://player.videasy.net/tv/${id}/${season}/${episode}`; break;
+                    case 5: targetUrl = `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`; break;
+                    default: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+                }
+            }
+
+            if (extBtn) extBtn.href = targetUrl;
+
+            setTimeout(() => {
+                iframe.src = targetUrl;
             }, 100);
         }
 
