@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- إضافة هذا السطر لحل مشاكل حماية السيرفرات (CORS / Referrer) -->
+    <meta name="referrer" content="origin">
     
     <!-- ================= SEO & PWA Meta Tags ================= -->
     <title>EfrînFlix Pro - منصة السينما العالمية والمسلسلات</title>
@@ -274,11 +276,11 @@
 
                 <!-- قائمة السيرفرات القوية والجديدة -->
                 <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] overflow-x-auto no-scrollbar">
-                    <button id="srv1" onclick="switchServer(1)" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1 (سريع)</button>
+                    <button id="srv1" onclick="switchServer(1)" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1 (VidLink)</button>
                     <button id="srv2" onclick="switchServer(2)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2 (EmbedSu)</button>
-                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (VidsrcPro)</button>
-                    <button id="srv4" onclick="switchServer(4)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 4 (AutoEmbed)</button>
-                    <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (2Embed)</button>
+                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (VidSrc)</button>
+                    <button id="srv4" onclick="switchServer(4)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 4 (Multi)</button>
+                    <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (Auto)</button>
                 </div>
 
                 <button onclick="closePlayerModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-bold transition">إغلاق <i class="fa-solid fa-xmark"></i></button>
@@ -299,8 +301,8 @@
                 <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
 
-            <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px]">
-                💡 في حال لم يعمل أحد السيرفرات بشكل جيد، جرب التبديل لسيرفر آخر من القائمة في الأعلى.
+            <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px] leading-relaxed">
+                💡 إذا واجهتك مشكلة في المشاهدة (شاشة سوداء أو تحميل مستمر)، يرجى <strong>إيقاف مانع الإعلانات (Ad-Blocker)</strong> أو تجربة سيرفر آخر.
             </div>
         </div>
     </div>
@@ -700,7 +702,7 @@
             switchServer(1);
         }
 
-        // دالة التبديل بين السيرفرات السريعة والمستقرة
+        // دالة التبديل بين السيرفرات السريعة والمستقرة (تم التحديث)
         function switchServer(srvNum) {
             const iframe = document.getElementById('videoIframe');
             const { id, type, season, episode } = activePlayingItem;
@@ -716,24 +718,27 @@
                 }
             });
 
+            // تفريغ المشغل أولاً
             iframe.src = '';
+            
+            // تأخير بسيط للسماح للمتصفح بتفريغ الفريم السابق
             setTimeout(() => {
                 if (type === 'movie') {
                     switch(srvNum) {
                         case 1: iframe.src = `https://vidlink.pro/movie/${id}`; break;
                         case 2: iframe.src = `https://embed.su/embed/movie/${id}`; break;
-                        case 3: iframe.src = `https://vidsrc.pro/embed/movie/${id}`; break;
-                        case 4: iframe.src = `https://player.autoembed.cc/embed/movie/${id}`; break;
-                        case 5: iframe.src = `https://www.2embed.cc/embed/${id}`; break;
+                        case 3: iframe.src = `https://vidsrc.cc/v2/embed/movie/${id}`; break;
+                        case 4: iframe.src = `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`; break;
+                        case 5: iframe.src = `https://autoembed.co/movie/tmdb/${id}`; break;
                         default: iframe.src = `https://vidlink.pro/movie/${id}`;
                     }
                 } else {
                     switch(srvNum) {
                         case 1: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`; break;
                         case 2: iframe.src = `https://embed.su/embed/tv/${id}/${season}/${episode}`; break;
-                        case 3: iframe.src = `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`; break;
-                        case 4: iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`; break;
-                        case 5: iframe.src = `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`; break;
+                        case 3: iframe.src = `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}`; break;
+                        case 4: iframe.src = `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${season}&e=${episode}`; break;
+                        case 5: iframe.src = `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`; break;
                         default: iframe.src = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
                     }
                 }
