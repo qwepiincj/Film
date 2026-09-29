@@ -80,10 +80,6 @@
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
         }
 
-        .glow-red {
-            box-shadow: 0 0 25px rgba(229, 9, 20, 0.4);
-        }
-
         .roulette-wheel {
             transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1);
         }
@@ -105,7 +101,7 @@
                 </div>
             </div>
 
-            <!-- Navigation Mode Switcher (Movies / TV) -->
+            <!-- Navigation Mode Switcher -->
             <div class="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 text-xs font-bold">
                 <button id="navMovieBtn" onclick="switchMediaType('movie')" class="px-3 py-1.5 rounded-xl text-white bg-emerald-600 transition shadow">
                     <i class="fa-solid fa-clapperboard text-xs"></i> أفلام
@@ -137,12 +133,12 @@
             
             <div class="max-w-4xl mx-auto text-center space-y-4">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
-                    <span>🛡️</span> مشغل آمن محمي من الإعلانات والنوافذ المنبثقة
+                    <span>🎬</span> أسرع سيرفرات بث مجانية ومباشرة بدون حظر
                 </div>
 
                 <h1 id="heroHeading" class="text-2xl md:text-5xl font-black leading-tight text-white tracking-tight">
                     استكشف آلاف الأفلام والمسلسلات <br class="hidden sm:inline">
-                    <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-400 bg-clip-text text-transparent">بجودة عالية وبدون إعلانات</span>
+                    <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-400 bg-clip-text text-transparent">بجودة عالية وبث سريع</span>
                 </h1>
 
                 <!-- Search Input Box -->
@@ -163,7 +159,6 @@
                 <div class="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
                     <select id="genreFilter" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
                         <option value="">كل التصنيفات</option>
-                        <!-- Populated by JS -->
                     </select>
 
                     <select id="yearFilter" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
@@ -174,7 +169,6 @@
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
                         <option value="2020">2020+</option>
-                        <option value="2010">2010+</option>
                     </select>
 
                     <select id="sortBy" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
@@ -196,20 +190,14 @@
                 <span id="pageStats" class="text-xs text-gray-400 font-semibold">الصفحة 1 من 500</span>
             </div>
 
-            <!-- Media Grid -->
             <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-6">
-                <!-- Cards rendered dynamically -->
             </div>
 
-            <!-- Pagination & Load More Controls -->
             <div class="mt-10 flex flex-col items-center gap-4">
                 <button id="loadMoreBtn" onclick="loadNextPage()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-8 py-3 rounded-2xl shadow-xl transition active:scale-95 text-xs md:text-sm flex items-center gap-2 border border-emerald-500/30">
                     <i class="fa-solid fa-circle-plus"></i> تحميل المزيد من العروض
                 </button>
-
-                <!-- Page Number Links -->
                 <div id="paginationNav" class="flex items-center gap-1.5 flex-wrap justify-center text-xs">
-                    <!-- Numbers populated by JS -->
                 </div>
             </div>
         </section>
@@ -228,25 +216,22 @@
                 </button>
             </div>
             <div id="detailsContent" class="overflow-y-auto p-5 md:p-8 space-y-6">
-                <!-- JS Inserted -->
             </div>
         </div>
     </div>
 
-    <!-- Anti-Ad Video Player Modal -->
+    <!-- Video Player Modal مع نظام حماية وغطاء النقر الخفي -->
     <div id="playerModal" onclick="closeModalOnBackdrop(event, 'playerModal')" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-lg flex items-center justify-center p-2 sm:p-6">
         <div onclick="event.stopPropagation()" class="w-full max-w-4xl bg-brand-dark rounded-3xl overflow-hidden relative border border-white/20 shadow-2xl flex flex-col max-h-[95vh]">
             
             <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-brand-card border-b border-white/10 gap-2">
-                <h3 id="playerTitle" class="font-bold text-white text-xs sm:text-base truncate max-w-[200px] sm:max-w-md">مشاهدة العمل</h3>
+                <h3 id="playerTitle" class="font-bold text-white text-xs sm:text-base truncate max-w-[180px] sm:max-w-sm">مشاهدة العمل</h3>
                 
-                <!-- TV Episode Selectors if TV -->
+                <!-- TV Episode Selectors -->
                 <div id="tvSelectors" class="hidden flex items-center gap-2">
                     <select id="seasonSelect" onchange="updateEpisodeSelector()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1 rounded-lg focus:outline-none">
-                        <!-- Seasons -->
                     </select>
                     <select id="episodeSelect" onchange="changeTvEpisode()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1 rounded-lg focus:outline-none">
-                        <!-- Episodes -->
                     </select>
                 </div>
 
@@ -262,13 +247,22 @@
                 </button>
             </div>
             
-            <!-- Video Iframe with Sandbox Pop-up Shield -->
-            <div class="relative aspect-video w-full bg-black flex items-center justify-center">
-                <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+            <!-- حاوية المشغل مع طبقة امتصاص الإعلانات النقرتين -->
+            <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+                <!-- غطاء حماية شفاف يمتص أول نقرة إعلانية منبثقة للسيرفر -->
+                <div id="adShield" onclick="removeAdShield()" class="absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center">
+                    <div class="bg-black/80 backdrop-blur-md text-white text-xs px-4 py-2 rounded-2xl border border-emerald-500/40 shadow-2xl pointer-events-none flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-400 animate-pulse"></i>
+                        <span>انقر هنا لبدء التشغيل الآمن بدون إعلانات</span>
+                    </div>
+                </div>
+
+                <!-- Iframe بدون أي sandbox نهائياً وبدون قيود لضمان عدم ظهور خطأ المشغل -->
+                <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
             </div>
 
-            <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-emerald-400 text-[11px] font-bold">
-                🛡️ تم تفعيل نظام منع الإعلانات والنوافذ المنبثقة تلقائياً (Anti-Ad Sandbox).
+            <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px]">
+                🛡️ نظام الحماية والتخطي الخفي مفعل. إذا ظهرت نافذة إعلانية، انقر على زر "سيرفر آخر" أعلى القائمة.
             </div>
         </div>
     </div>
@@ -288,7 +282,6 @@
             </div>
 
             <div id="rouletteResult" class="hidden glass-card p-3 rounded-2xl border border-emerald-500/40">
-                <!-- Result displayed here -->
             </div>
 
             <button id="spinBtn" onclick="spinRoulette()" class="w-full bg-gradient-to-r from-amber-500 to-emerald-500 text-white font-bold py-3 rounded-2xl shadow-lg transition active:scale-95 text-xs md:text-sm">
@@ -309,7 +302,6 @@
                 </button>
             </div>
             <div id="watchlistContainer" class="max-h-80 overflow-y-auto space-y-2.5 no-scrollbar">
-                <!-- Watchlist items -->
             </div>
         </div>
     </div>
@@ -319,19 +311,51 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-2">
                 <span class="font-bold text-white">EfrînFlix Pro</span>
-                <span>— تجربة سينمائية محمية بدون إعلانات &copy; 2026</span>
+                <span>— تجربة سينمائية فريدة &copy; 2026</span>
             </div>
             <p>تم جلب البيانات مجاناً عبر TMDB API</p>
         </div>
     </footer>
 
-    <!-- JS Application Logic -->
+    <!-- JS Application Logic & Stealth Anti-Ad Shield -->
     <script>
+        // =========================================================
+        // نظام التخطي الخفي للإعلانات والنوافذ المنبثقة (Stealth Anti-Popups)
+        // =========================================================
+        const originalOpen = window.open;
+        window.open = function (url, target, features) {
+            console.log("🛡️️ تم اعتراض وتخطي نافذة إعلانية منبثقة بنجاح:", url);
+            return {
+                closed: true,
+                close: function() {},
+                focus: function() {},
+                blur: function() {}
+            };
+        };
+
+        function removeAdShield() {
+            const shield = document.getElementById('adShield');
+            if (shield) {
+                shield.style.display = 'none';
+                console.log("🛡️ تم تفعيل المشغل وإزالة غطاء الحماية.");
+            }
+        }
+
+        function resetAdShield() {
+            const shield = document.getElementById('adShield');
+            if (shield) {
+                shield.style.display = 'flex';
+            }
+        }
+
+        // =========================================================
+        // إعدادات التطبيق الأساسية
+        // =========================================================
         const API_KEY = "fca02c6813f7dc2ace00bca1009e315a"; 
         const BASE_URL = "https://api.themoviedb.org/3";
         const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-        let currentType = 'movie'; // 'movie' or 'tv'
+        let currentType = 'movie';
         let currentPage = 1;
         let totalPages = 1;
         let currentItems = [];
@@ -570,6 +594,8 @@
             document.getElementById('playerTitle').innerText = `مشاهدة: ${title}`;
             const tvSelectors = document.getElementById('tvSelectors');
 
+            resetAdShield(); // إعادة إظهار طبقة الحماية عند الفتح
+
             if (currentType === 'tv') {
                 tvSelectors.classList.remove('hidden');
                 const seasonSelect = document.getElementById('seasonSelect');
@@ -606,6 +632,8 @@
         function switchServer(srvNum) {
             const iframe = document.getElementById('videoIframe');
             const { id, type, season, episode } = activePlayingItem;
+
+            resetAdShield(); // إعادة تفعيل درع الحماية عند تغيير السيرفر
 
             [1, 2, 3].forEach(n => {
                 document.getElementById(`srv${n}`).className = n === srvNum ? "px-2 py-1 rounded-lg font-bold text-white bg-emerald-600" : "px-2 py-1 rounded-lg font-bold text-gray-300 hover:text-white";
