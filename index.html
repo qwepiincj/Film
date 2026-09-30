@@ -14,12 +14,15 @@
     <meta name="author" content="EfrînFlix Pro">
     <meta name="robots" content="index, follow">
     
-    <!-- PWA Setup -->
+    <!-- PWA Setup & Manifest Link -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#080C14">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="EfrînFlix">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/192.png?text=EfrinFlix">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://via.placeholder.com/192.png?text=EfrinFlix">
     
     <!-- Open Graph (Social Sharing) -->
     <meta property="og:title" content="EfrînFlix Pro - سينما البريميوم">
@@ -861,6 +864,17 @@
                 spinBtn.disabled = false;
                 spinBtn.classList.remove('opacity-50');
             }
+        }
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered Successfully:', reg.scope))
+                    .catch(err => console.log('Service Worker Registration Failed:', err));
+            });
         }
     </script>
 </body>
