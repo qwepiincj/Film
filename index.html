@@ -1,952 +1,1128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- السماح بنقل Referrer الأساسي لتشغيل السيرفرات دون حظر -->
-    <meta name="referrer" content="origin-when-cross-origin">
-    
-    <!-- ================= SEO & PWA Meta Tags ================= -->
-    <title>EfrînFlix Pro - منصة السينما العالمية والمسلسلات</title>
-    <meta name="description" content="منصة EfrînFlix Pro لمشاهدة أحدث الأفلام والمسلسلات العالمية المترجمة بجودة عالية وبث مباشر سريع بدون إعلانات.">
-    <meta name="keywords" content="أفلام, مسلسلات, EfrinFlix, عفرين فليكس, بث مباشر, مترجم, سينما, PWA">
-    <meta name="author" content="EfrînFlix Pro">
-    <meta name="robots" content="index, follow">
-    
-    <!-- PWA Setup & Manifest Link -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#080C14">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="EfrînFlix">
-    
-    <!-- PWA Icons Embedded via Data URI -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
-    
-    <!-- Open Graph (Social Sharing) -->
-    <meta property="og:title" content="EfrînFlix Pro - سينما البريميوم">
-    <meta property="og:description" content="استكشف آلاف الأفلام والمسلسلات بجودة عالية وبث سريع مجاناً.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
-
-    <!-- Tailwind CSS & FontAwesome & Google Fonts -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#080C14',
-                            card: '#121824',
-                            cardHover: '#1A2333',
-                            red: '#E50914',
-                            redHover: '#B80710',
-                            accent: '#6366F1',
-                            gold: '#F59E0B',
-                            emerald: '#10B981'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #080C14;
-            color: #F3F4F6;
-            font-family: 'Cairo', sans-serif;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .glass-header {
-            background: rgba(8, 12, 20, 0.92);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .glass-card {
-            background: rgba(18, 24, 36, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .glass-modal {
-            background: rgba(12, 16, 26, 0.96);
-            backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .glow-emerald { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
-        .roulette-wheel { transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); }
-        
-        .hero-overlay {
-            background: linear-gradient(0deg, #080C14 0%, rgba(8,12,20,0.85) 50%, rgba(8,12,20,0.4) 100%);
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="origin-when-cross-origin">
+  <meta name="theme-color" content="#080c14">
+  <meta name="description" content="EfrînFlix Pro: استكشف الأفلام والمسلسلات والبيانات السينمائية.">
+  <meta name="application-name" content="EfrînFlix Pro">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="EfrînFlix">
+  <title>EfrînFlix Pro - منصة السينما العالمية والمسلسلات</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080c14'/%3E%3Cpath d='M25 17v30l24-15z' fill='%2310b981'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: {
+      dark: '#080C14', card: '#121824', red: '#E50914', gold: '#F59E0B', emerald: '#10B981'
+    } }, fontFamily: { sans: ['Cairo', 'sans-serif'] } } } };
+  </script>
+  <style>
+     :root { color-scheme:dark; --ef-bg:#080c14; --ef-panel:#111925; --ef-edge:rgba(255,255,255,.09); --ef-green:#10b981; --ef-gold:#f3bd55; }
+     [hidden] { display:none!important; }
+     html { scroll-behavior: smooth; }
+    body { background:radial-gradient(ellipse at 52% -12%,rgba(16,185,129,.09),transparent 35%),linear-gradient(180deg,#080c14 0%,#070a10 100%); color:#f3f4f6; font-family:Cairo,sans-serif; -webkit-tap-highlight-color:transparent; }
+    button,select,input { font:inherit; }
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { outline:3px solid #34d399; outline-offset:3px; }
+     .glass-header { background:rgba(7,10,17,.86); backdrop-filter:blur(22px) saturate(140%); border-bottom:1px solid rgba(255,255,255,.075); box-shadow:0 10px 36px rgba(0,0,0,.14); }
+    .glass-card { background:rgba(18,24,36,.88); border:1px solid rgba(255,255,255,.08); transition:transform .2s,border-color .2s,box-shadow .2s; }
+    .glass-card:hover { border-color:rgba(16,185,129,.42); box-shadow:0 10px 30px -10px rgba(16,185,129,.25); }
+     .glass-modal { background:rgba(12,16,26,.98); border:1px solid rgba(255,255,255,.15); }
+     .no-scrollbar { scrollbar-width:none; }
+     .no-scrollbar::-webkit-scrollbar { display:none; }
+     .hero-overlay { background:linear-gradient(0deg,#080c14 0%,rgba(8,12,20,.5) 39%,rgba(8,12,20,.12) 100%),linear-gradient(270deg,rgba(8,12,20,.9) 0%,rgba(8,12,20,.62) 32%,rgba(8,12,20,.12) 69%,rgba(8,12,20,.06) 100%),radial-gradient(ellipse at 62% 42%,rgba(16,185,129,.12),transparent 43%); }
+     .media-card:hover .poster { transform:scale(1.045); }
+      .modal-panel { max-height:92vh; }
+      body.modal-open { overflow:hidden; }
+      button:disabled,select:disabled { cursor:not-allowed; opacity:.48; }
+     body[dir="ltr"] .text-right { text-align:left!important; }
+     body[dir="ltr"] #searchInput { padding-left:2.5rem; padding-right:5rem; }
+     body[dir="ltr"] #searchButton { left:auto; right:.375rem; }
+     body[dir="ltr"] #clearSearchBtn { left:auto; right:4.7rem; }
+     body[dir="ltr"] #searchIcon { right:auto; left:.875rem; }
+     body[dir="ltr"] .media-card .top-2.right-2 { right:auto; left:.5rem; }
+     body[dir="ltr"] .media-card .top-2.left-2 { left:auto; right:.5rem; }
+      .app-header-inner { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:.75rem; }
+      .app-head-brand { justify-self:start; }
+      .app-head-selectors { justify-self:center; }
+      .app-head-actions { justify-self:end; }
+      .shelf-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.75rem; }
+      .shelf-heading-title { display:flex; align-items:center; gap:.5rem; min-width:0; }
+      .shelf-controls { display:flex; align-items:center; gap:.4rem; }
+      .shelf-control { width:2.15rem; height:2.15rem; display:grid; place-items:center; border:1px solid rgba(255,255,255,.11); border-radius:.8rem; background:rgba(18,24,36,.8); color:#d1d5db; transition:background .2s,border-color .2s,color .2s,transform .2s; }
+      .shelf-control:hover { background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.45); color:#6ee7b7; transform:translateY(-1px); }
+      .shelf-track { scrollbar-width:none; scroll-snap-type:x mandatory; scroll-behavior:smooth; overscroll-behavior-inline:contain; }
+      .shelf-track::-webkit-scrollbar { display:none; }
+      .shelf-card { flex:0 0 132px; scroll-snap-align:start; border-color:rgba(255,255,255,.1); transition:transform .25s,border-color .25s,box-shadow .25s; }
+      .shelf-card img { transition:transform .45s cubic-bezier(.2,.7,.2,1); }
+      .shelf-card:hover,.shelf-card:focus-within { transform:translateY(-3px); border-color:rgba(16,185,129,.42); box-shadow:0 12px 26px -16px rgba(16,185,129,.55); }
+      .shelf-card:hover img,.shelf-card:focus-within img { transform:scale(1.04); }
+      .media-card { border-color:rgba(255,255,255,.1); box-shadow:0 8px 22px rgba(0,0,0,.12); transition:transform .25s,border-color .25s,box-shadow .25s; }
+      .media-card:hover,.media-card:focus-within { transform:translateY(-4px); border-color:rgba(16,185,129,.45); box-shadow:0 18px 34px -20px rgba(16,185,129,.62); }
+      .poster-action { isolation:isolate; }
+      .poster-action::after { content:'\f04b'; position:absolute; z-index:1; left:50%; top:50%; width:3rem; height:3rem; display:grid; place-items:center; border:1px solid rgba(255,255,255,.38); border-radius:999px; background:rgba(5,150,105,.92); color:white; font:900 1rem 'Font Awesome 6 Free'; box-shadow:0 8px 24px rgba(0,0,0,.38); opacity:0; transform:translate(-50%,-42%) scale(.88); transition:opacity .2s,transform .2s; pointer-events:none; }
+      .poster-action:hover::after,.poster-action:focus-visible::after { opacity:1; transform:translate(-50%,-50%) scale(1); }
+      .filter-panel { background:linear-gradient(115deg,rgba(18,24,36,.82),rgba(10,15,24,.72)); border-color:rgba(255,255,255,.08); box-shadow:0 16px 35px -30px rgba(16,185,129,.45); }
+      .filter-controls { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; }
+      .filter-controls select { min-height:2.5rem; border-color:rgba(255,255,255,.1); transition:border-color .2s,background .2s; }
+      .filter-controls select:not(:disabled):hover { border-color:rgba(16,185,129,.42); background-color:rgba(18,24,36,.98); }
+      #detailsModal .glass-modal { background:radial-gradient(ellipse at top right,rgba(16,185,129,.09),transparent 42%),rgba(12,16,26,.98); }
+      #detailsModal .modal-panel { box-shadow:0 32px 100px rgba(0,0,0,.68),0 0 0 1px rgba(16,185,129,.035); }
+      #detailsModal .modal-panel > div:first-child { background:rgba(8,12,20,.82); backdrop-filter:blur(18px); }
+      .details-copy { padding:clamp(1rem,3vw,2rem); border:1px solid rgba(255,255,255,.08); border-radius:1.5rem; background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012)); }
+      .details-poster { flex-shrink:0; box-shadow:0 22px 48px -22px rgba(0,0,0,.85); }
+      body[dir="ltr"] .shelf-control[data-shelf-shift="forward"] i,body[dir="ltr"] .shelf-control[data-shelf-shift="back"] i { transform:rotate(180deg); }
+      #languageSelect,#contentTypeGroup { border-radius:999px; }
+      #contentTypeGroup { background:rgba(0,0,0,.36); border-color:rgba(255,255,255,.11); padding:.22rem; }
+      #contentTypeGroup button { border-radius:999px; padding:.5rem .9rem; transition:background .2s,color .2s,box-shadow .2s; }
+      #contentTypeGroup button[aria-pressed="true"] { background:linear-gradient(135deg,#0e8e68,#10b981); color:white; box-shadow:0 5px 18px rgba(16,185,129,.22); }
+      #contentTypeGroup button[aria-pressed="false"] { color:#9ca3af; }
+      #rouletteOpenBtn,#watchlistOpenBtn,#pwaInstallBtn,#apkDownloadBtn { border-radius:999px; transition:transform .2s,border-color .2s,background .2s; }
+      #rouletteOpenBtn:hover,#watchlistOpenBtn:hover,#pwaInstallBtn:hover,#apkDownloadBtn:hover { transform:translateY(-1px); }
+      #heroSection { min-height:clamp(620px,67vh,740px); background-color:#080c14; background-position:center 27%; background-size:cover; overflow:hidden; }
+      #heroSection::after { content:""; position:absolute; z-index:1; inset:auto 0 0; height:1px; background:linear-gradient(90deg,transparent,rgba(16,185,129,.32),rgba(255,255,255,.12),transparent); }
+      .feature-content { display:flex; flex-direction:column; gap:.9rem; padding-top:3.5rem; padding-bottom:2.25rem; }
+      .hero-badge { align-self:flex-start; padding:.48rem .9rem; border-color:rgba(243,189,85,.22); background:linear-gradient(110deg,rgba(18,24,36,.72),rgba(15,19,27,.55)); box-shadow:0 8px 24px rgba(0,0,0,.15),inset 0 1px rgba(255,255,255,.06); backdrop-filter:blur(10px); }
+      .hero-badge i { color:var(--ef-gold); filter:drop-shadow(0 0 8px rgba(243,189,85,.6)); }
+      #heroTitle.hero-title { max-width:11ch; font-size:clamp(3.5rem,7.2vw,6.3rem); font-weight:900; line-height:.98; letter-spacing:-.045em; text-shadow:0 8px 42px rgba(0,0,0,.55); }
+      .hero-meta { display:flex; align-items:center; flex-wrap:wrap; gap:.55rem; }
+      .hero-meta-item { display:inline-flex; align-items:center; gap:.42rem; min-height:30px; padding:.25rem .65rem; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(8,12,20,.48); color:#e5e7eb; font-size:.72rem; font-weight:700; backdrop-filter:blur(8px); }
+      .hero-meta-rating { border-color:rgba(243,189,85,.28); color:#ffd77f; background:rgba(70,48,13,.45); }
+      .hero-meta-item i { font-size:.68rem; color:#7ee7bc; }
+      .hero-meta-rating i { color:#ffd77f; }
+      #heroOverview.hero-overview { max-width:47rem; color:rgba(243,244,246,.83); font-size:.91rem; line-height:1.95; text-shadow:0 2px 14px rgba(0,0,0,.48); }
+      #heroSection .hero-tool-row { align-items:center; gap:1.25rem; padding-top:.55rem; }
+      #heroActionBtns { gap:.65rem; }
+      .hero-actions > button { min-height:46px; border-radius:999px; }
+      .hero-actions > button:first-child { padding-inline:1.45rem; background:linear-gradient(115deg,#0d9a6f,#11b981); box-shadow:0 10px 28px rgba(16,185,129,.23); transition:transform .2s,box-shadow .2s; }
+      .hero-actions > button:first-child:hover { transform:translateY(-2px); box-shadow:0 14px 34px rgba(16,185,129,.32); }
+      .hero-actions > button:last-child { background:rgba(8,12,20,.48); border:1px solid rgba(255,255,255,.17); backdrop-filter:blur(10px); }
+      #heroSearch { width:min(100%,22rem); }
+      .hero-search input { min-height:48px; padding-inline-start:6.2rem; border-radius:999px; background:rgba(10,14,22,.75); border-color:rgba(255,255,255,.16); box-shadow:0 12px 34px rgba(0,0,0,.18); backdrop-filter:blur(14px); }
+      .hero-search button { min-height:36px; border-radius:999px; padding-inline:1.1rem; }
+      .hero-quick-filters { gap:.55rem; padding-top:.45rem; }
+      .hero-quick-filters [data-filter] { padding:.45rem .85rem; border-radius:999px; border-color:rgba(255,255,255,.12); background:rgba(8,12,20,.45); transition:transform .18s,border-color .18s,background .18s; }
+      .hero-quick-filters [data-filter]:hover { transform:translateY(-1px); border-color:rgba(16,185,129,.4); }
+      .hero-quick-filters [data-filter][aria-pressed="true"] { background:linear-gradient(120deg,rgba(16,185,129,.22),rgba(16,185,129,.1)); border-color:rgba(16,185,129,.48); box-shadow:inset 0 1px rgba(255,255,255,.08); }
+      #discoverShelves { padding-top:2rem; }
+      .shelf-heading-title h2 { letter-spacing:-.02em; }
+      .filter-panel { border-radius:1.35rem; padding:1rem; }
+      .filter-controls select { border-radius:999px; padding-inline:1rem; }
+      .media-card { border-radius:1.2rem; }
+      .media-card > div:last-child { padding:1rem; background:linear-gradient(180deg,rgba(17,25,37,.92),#111925); }
+      .poster-action::before { content:""; position:absolute; z-index:1; inset:22% 0 0; background:linear-gradient(180deg,transparent 42%,rgba(4,7,12,.52)); pointer-events:none; }
+      .poster-action::after { z-index:2; }
+      .poster-action > span,.poster-action > button { z-index:3; }
+      .media-card .poster-action > span { border:1px solid rgba(255,255,255,.12); backdrop-filter:blur(8px); }
+      .media-card .poster-action > button { border:1px solid rgba(255,255,255,.16); box-shadow:0 5px 16px rgba(0,0,0,.32); }
+      @media (min-width:640px) { .shelf-card { flex-basis:160px; } }
+      @media (max-width:639px) {
+        .app-header-inner { grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"brand actions" "selectors selectors"; gap:.5rem; }
+        .app-head-brand { grid-area:brand; }
+        .app-head-selectors { grid-area:selectors; justify-self:center; }
+        .app-head-actions { grid-area:actions; }
+        .filter-panel { align-items:stretch; }
+        .filter-title { flex:1 1 100%; }
+        .filter-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; }
+        .filter-controls select { width:100%; min-width:0; }
+        #sortBy,#resetFiltersBtn { grid-column:1/-1; }
+        #heroSection { min-height:570px; background-position:57% 25%; }
+        body[dir="ltr"] #heroSection { background-position:43% 25%; }
+        .feature-content { padding-top:2.5rem; padding-bottom:1.35rem; gap:.8rem; }
+        #heroTitle.hero-title { max-width:12ch; font-size:clamp(2.8rem,12vw,4rem); line-height:1.02; }
+        #heroOverview.hero-overview { font-size:.78rem; line-height:1.75; }
+        #heroSection .hero-tool-row { gap:.8rem; }
+        #heroSearch { width:100%; }
+        .hero-quick-filters { padding-top:.15rem; gap:.4rem; }
+        .hero-quick-filters [data-filter] { padding:.38rem .68rem; font-size:10px; }
+        #discoverShelves { padding-top:1.35rem; }
+        .filter-panel { padding:.85rem; }
+      }
+      @media (max-width:767px) {
+        .app-header-inner { grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"brand actions" "selectors selectors"; gap:.5rem; }
+        .app-head-brand { grid-area:brand; }
+        .app-head-selectors { grid-area:selectors; justify-self:center; }
+        .app-head-actions { grid-area:actions; }
+        #rouletteOpenBtn span,#watchlistOpenBtn span:last-child { display:none; }
+      }
+      .skeleton { background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.10),rgba(255,255,255,.04)); background-size:200% 100%; animation:shimmer 1.3s linear infinite; }
+    @keyframes shimmer { to { background-position:-200% 0; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important; } }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-brand-emerald selection:text-white">
-
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-40 glass-header px-4 lg:px-8 py-3 transition-all duration-300">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <!-- Brand Logo -->
-            <div onclick="resetToHome()" class="flex items-center gap-2 md:gap-3 cursor-pointer group">
-                <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-500 flex items-center justify-center text-white font-black text-xl md:text-2xl shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition">
-                    <i class="fa-solid fa-film"></i>
-                </div>
-                <div>
-                    <span class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Efrîn<span class="text-emerald-400">Flix</span></span>
-                    <span class="block text-[9px] md:text-[10px] font-bold text-emerald-400 tracking-widest uppercase -mt-1">سينما البريميوم Pro</span>
-                </div>
-            </div>
-
-            <!-- Movie / TV Switcher -->
-            <div class="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 text-xs font-bold">
-                <button id="navMovieBtn" onclick="switchMediaType('movie')" class="px-3 py-1.5 rounded-xl text-white bg-emerald-600 transition shadow">
-                    <i class="fa-solid fa-clapperboard text-xs"></i> أفلام
-                </button>
-                <button id="navTvBtn" onclick="switchMediaType('tv')" class="px-3 py-1.5 rounded-xl text-gray-400 hover:text-white transition">
-                    <i class="fa-solid fa-tv text-xs"></i> مسلسلات
-                </button>
-            </div>
-
-            <!-- Top Actions -->
-            <div class="flex items-center gap-2 md:gap-3">
-                <!-- Direct APK Download Button -->
-                <a href="./EfrinFlix.apk" download="EfrînFlix-Pro.apk" class="bg-amber-500 hover:bg-amber-600 text-black px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
-                    <i class="fa-brands fa-android text-base"></i>
-                    <span class="hidden sm:inline">تنزيل APK</span>
-                </a>
-
-                <!-- PWA Install Button -->
-                <button id="pwaInstallBtn" onclick="installPWA()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
-                    <i class="fa-solid fa-download"></i>
-                    <span class="hidden sm:inline">تثبيت التطبيق</span>
-                </button>
-
-                <button onclick="openRouletteModal()" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-dice text-amber-400"></i>
-                    <span class="hidden sm:inline">اقتراح</span>
-                </button>
-                <button onclick="toggleWatchlistModal()" class="relative bg-white/10 hover:bg-white/20 active:scale-95 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/10">
-                    <i class="fa-solid fa-bookmark text-brand-gold"></i>
-                    <span id="watchlistCount" class="bg-brand-red text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
-                </button>
-            </div>
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-40 glass-header px-4 lg:px-8 py-3">
+    <div class="app-header-inner max-w-7xl mx-auto gap-3">
+      <button id="homeButton" class="app-head-brand flex items-center gap-3 text-right" data-i18n-aria="homeLabel" aria-label="العودة إلى الصفحة الرئيسية">
+        <span class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-amber-500 grid place-items-center text-xl shadow-lg"><i class="fa-solid fa-film" aria-hidden="true"></i></span>
+        <span><strong class="block text-xl font-black">Efrîn<span class="text-emerald-400">Flix</span></strong><small data-i18n="premium" class="block -mt-1 text-[10px] font-bold text-emerald-400">سينما البريميوم Pro</small></span>
+      </button>
+      <div class="app-head-selectors flex items-center gap-2">
+        <label class="sr-only" for="languageSelect" data-i18n="language">اللغة</label>
+        <select id="languageSelect" class="glass-card bg-brand-dark px-2.5 py-2 rounded-xl text-xs font-bold" aria-label="اللغة"><option value="ar">عربي</option><option value="ku">Kurdî</option><option value="en">English</option></select>
+        <div id="contentTypeGroup" class="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 text-xs font-bold" role="group" aria-label="نوع المحتوى" data-i18n-aria="contentType">
+          <button id="navMovieBtn" data-type="movie" class="px-3 py-1.5 rounded-xl text-white bg-emerald-600" aria-pressed="true"><i class="fa-solid fa-clapperboard" aria-hidden="true"></i> <span data-i18n="movies">أفلام</span></button>
+          <button id="navTvBtn" data-type="tv" class="px-3 py-1.5 rounded-xl text-gray-400 px-3 py-1.5" aria-pressed="false"><i class="fa-solid fa-tv" aria-hidden="true"></i> <span data-i18n="series">مسلسلات</span></button>
         </div>
-    </header>
-
-    <main class="flex-grow">
-        <!-- Banner Section -->
-        <section id="heroSection" class="relative w-full min-h-[420px] md:min-h-[500px] flex items-end pb-8 px-4 lg:px-8 overflow-hidden bg-cover bg-center transition-all duration-700">
-            <div class="absolute inset-0 hero-overlay"></div>
-
-            <div class="relative z-10 max-w-7xl mx-auto w-full space-y-4">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-[11px] font-bold text-amber-400 border border-amber-500/30">
-                    <i class="fa-solid fa-fire text-amber-400"></i> <span id="heroBadge">الأكثر تداولاً اليوم</span>
-                </div>
-
-                <h1 id="heroTitle" class="text-3xl md:text-5xl font-black text-white leading-tight drop-shadow-md max-w-2xl">
-                    جاري تحميل البانر...
-                </h1>
-
-                <p id="heroOverview" class="text-xs md:text-sm text-gray-300 max-w-2xl line-clamp-2 md:line-clamp-3 leading-relaxed drop-shadow">
-                    ...
-                </p>
-
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-                    <div class="flex items-center gap-3" id="heroActionBtns"></div>
-
-                    <div class="relative w-full md:w-80">
-                        <input type="text" id="searchInput" placeholder="ابحث عن فيلم أو مسلسل..." 
-                            oninput="handleSearchInput(event)"
-                            class="w-full pl-24 pr-10 py-2.5 rounded-2xl glass-card text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition text-xs shadow-2xl">
-                        <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-gray-400 text-xs"></i>
-                        <button onclick="performSearch()" class="absolute left-1.5 top-1 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs transition shadow-md">
-                            بحث
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 text-[11px] font-bold">
-                    <button onclick="quickFilter('trending')" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-xl whitespace-nowrap hover:bg-emerald-500/30">🔥 الشائع الآن</button>
-                    <button onclick="quickFilter('action')" class="glass-card text-gray-300 px-3 py-1 rounded-xl whitespace-nowrap hover:text-white">🎬 أكشن</button>
-                    <button onclick="quickFilter('anime')" class="glass-card text-gray-300 px-3 py-1 rounded-xl whitespace-nowrap hover:text-white">🐉 أنيميشن</button>
-                    <button onclick="quickFilter('korean')" class="glass-card text-gray-300 px-3 py-1 rounded-xl whitespace-nowrap hover:text-white">🇰🇷 دراما كورية</button>
-                    <button onclick="quickFilter('scifi')" class="glass-card text-gray-300 px-3 py-1 rounded-xl whitespace-nowrap hover:text-white">🚀 خيال علمي</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Continue Watching Section -->
-        <section id="continueWatchingSection" class="hidden max-w-7xl mx-auto px-4 lg:px-8 mt-6">
-            <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">
-                        <i class="fa-solid fa-rotate-right animate-spin-slow"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">متابعة المشاهدة</span>
-                        <h4 id="continueTitle" class="font-bold text-white text-xs md:text-sm truncate max-w-[200px] sm:max-w-md">...</h4>
-                    </div>
-                </div>
-                <button id="continueBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-lg transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-play text-[10px]"></i> إكمال
-                </button>
-            </div>
-        </section>
-
-        <!-- Main Display & Filters -->
-        <section class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
-            <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card/50 p-3 rounded-2xl border border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-6 bg-emerald-500 rounded-full"></div>
-                    <h2 id="sectionTitle" class="text-base md:text-xl font-bold text-white">الأعمال الموصى بها</h2>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2 text-xs">
-                    <select id="genreFilter" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
-                        <option value="">كل التصنيفات</option>
-                    </select>
-                    <select id="yearFilter" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
-                        <option value="">جميع السنين</option>
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                    </select>
-                    <select id="sortBy" onchange="applyFilters()" class="glass-card text-gray-300 bg-brand-dark px-3 py-1.5 rounded-xl border border-white/10 focus:outline-none">
-                        <option value="popularity.desc">الأكثر شعبية 🔥</option>
-                        <option value="vote_average.desc">الأعلى تقييماً ⭐</option>
-                        <option value="primary_release_date.desc">الأحدث إصداراً 🆕</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Media Grid -->
-            <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-6 mt-6"></div>
-
-            <!-- Pagination -->
-            <div class="mt-10 flex flex-col items-center gap-4">
-                <span id="pageStats" class="text-xs text-gray-400 font-semibold"></span>
-                <button id="loadMoreBtn" onclick="loadNextPage()" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-8 py-3 rounded-2xl shadow-xl transition active:scale-95 text-xs md:text-sm flex items-center gap-2 border border-emerald-500/30">
-                    <i class="fa-solid fa-circle-plus"></i> تحميل المزيد
-                </button>
-                <div id="paginationNav" class="flex items-center gap-1.5 flex-wrap justify-center text-xs"></div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Details Modal -->
-    <div id="detailsModal" onclick="closeModalOnBackdrop(event, 'detailsModal')" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        <div onclick="event.stopPropagation()" class="glass-modal w-full max-w-4xl rounded-3xl overflow-hidden relative shadow-2xl border border-white/20 max-h-[90vh] flex flex-col">
-            <div class="sticky top-0 z-30 bg-brand-dark/95 backdrop-blur-md px-5 py-3.5 border-b border-white/10 flex items-center justify-between">
-                <span class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-info"></i> تفاصيل العمل
-                </span>
-                <button onclick="closeModal('detailsModal')" class="bg-brand-red/90 hover:bg-brand-red text-white px-3.5 py-1.5 rounded-full font-bold text-xs flex items-center gap-1 transition">
-                    <span>إغلاق</span> <i class="fa-solid fa-xmark text-sm"></i>
-                </button>
-            </div>
-            <div id="detailsContent" class="overflow-y-auto p-5 md:p-8 space-y-6 no-scrollbar"></div>
-        </div>
+      </div>
+      <div class="app-head-actions flex items-center gap-2">
+        <a id="apkDownloadBtn" href="./EfrinFlix.apk" download="EfrinFlix-Pro.apk" hidden class="bg-amber-500 hover:bg-amber-600 text-black px-3 py-2 rounded-xl text-xs font-bold" aria-label="تنزيل تطبيق أندرويد"><i class="fa-brands fa-android" aria-hidden="true"></i><span class="hidden sm:inline" data-i18n="downloadApk"> تنزيل APK</span></a>
+        <button id="pwaInstallBtn" type="button" hidden class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-download" aria-hidden="true"></i><span class="hidden sm:inline" data-i18n="installApp"> تثبيت التطبيق</span></button>
+        <button id="rouletteOpenBtn" type="button" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-dice" aria-hidden="true"></i><span class="hidden sm:inline" data-i18n="suggest"> اقتراح</span></button>
+        <button id="watchlistOpenBtn" type="button" class="relative bg-white/10 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/10" aria-label="فتح المساحة الشخصية" data-i18n-aria="personalSpace">
+          <i class="fa-solid fa-bookmark text-amber-400" aria-hidden="true"></i> <span id="watchlistCount" class="bg-red-600 px-2 py-0.5 rounded-full">0</span><span class="hidden sm:inline" data-i18n="mySpace"> مساحتي</span>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <!-- Video Player Modal -->
-    <div id="playerModal" onclick="closeModalOnBackdrop(event, 'playerModal')" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-lg flex items-center justify-center p-2 sm:p-6">
-        <div onclick="event.stopPropagation()" class="w-full max-w-5xl bg-brand-dark rounded-3xl overflow-hidden relative border border-white/20 shadow-2xl flex flex-col max-h-[95vh]">
-            
-            <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-brand-card border-b border-white/10 gap-2">
-                <h3 id="playerTitle" class="font-bold text-white text-xs sm:text-base truncate max-w-[150px] sm:max-w-xs">مشاهدة العمل</h3>
-                
-                <div id="tvSelectors" class="hidden flex items-center gap-2">
-                    <select id="seasonSelect" onchange="updateEpisodeSelector()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg focus:outline-none"></select>
-                    <select id="episodeSelect" onchange="changeTvEpisode()" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg focus:outline-none"></select>
-                </div>
-
-                <!-- قائمة السيرفرات المحدثة والمستقرة -->
-                <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] overflow-x-auto no-scrollbar">
-                    <button id="srv1" onclick="switchServer(1)" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1 (VidLink)</button>
-                    <button id="srv2" onclick="switchServer(2)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2 (VidSrc)</button>
-                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (2Embed)</button>
-                    <button id="srv4" onclick="switchServer(4)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 4 (Videasy)</button>
-                    <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (AutoEmbed)</button>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <a id="externalPlayerBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">فتح خارجي</span>
-                    </a>
-                    <button onclick="closePlayerModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full text-xs font-bold transition">إغلاق <i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-            
-            <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
-                <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-emerald-500 z-0 bg-black">
-                    <i class="fa-solid fa-spinner fa-spin text-3xl"></i>
-                    <span class="text-xs text-gray-400">جاري تحميل المشغل...</span>
-                </div>
-
-                <iframe id="videoIframe" class="w-full h-full relative z-10 bg-transparent" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="origin"></iframe>
-            </div>
-
-            <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px] leading-relaxed">
-                💡 إذا واجهتك مشكلة في المشاهدة، يمكنك النقر على زر <strong>"فتح خارجي"</strong> بالأعلى أو التبديل بين السيرفرات البديلة.
-            </div>
+  <main class="flex-grow">
+    <section id="heroSection" class="relative min-h-[430px] md:min-h-[510px] flex items-end px-4 lg:px-8 pb-8 bg-cover bg-center" aria-labelledby="heroTitle">
+      <div class="absolute inset-0 hero-overlay" aria-hidden="true"></div>
+      <div class="feature-content relative z-10 max-w-7xl mx-auto w-full">
+        <div class="hero-badge inline-flex items-center gap-2 rounded-full glass-card text-[11px] font-bold text-amber-300"><i class="fa-solid fa-fire" aria-hidden="true"></i><span id="heroBadge" data-i18n="trendingToday">الأكثر تداولاً اليوم</span></div>
+        <h1 id="heroTitle" data-i18n="heroLoading" class="hero-title text-3xl md:text-5xl font-black leading-tight max-w-2xl">جاري تحميل البانر...</h1>
+        <div id="heroMeta" class="hero-meta" hidden></div>
+        <p id="heroOverview" class="hero-overview text-xs md:text-sm text-gray-300 max-w-2xl line-clamp-3 leading-relaxed"></p>
+        <div class="hero-tool-row flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2">
+          <div id="heroActionBtns" class="hero-actions flex items-center"></div>
+          <div id="heroSearch" class="hero-search relative w-full md:w-80">
+            <label class="sr-only" for="searchInput" data-i18n="searchLabel">ابحث عن فيلم أو مسلسل</label>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="ابحث عن فيلم أو مسلسل..." data-i18n-placeholder="searchPlaceholder" class="w-full pl-20 pr-10 py-2.5 rounded-2xl glass-card text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs">
+            <i id="searchIcon" class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-gray-400 text-xs" aria-hidden="true"></i>
+            <button id="clearSearchBtn" type="button" hidden class="absolute left-[4.7rem] top-1.5 w-8 h-8 rounded-lg text-gray-300 hover:bg-white/10" aria-label="مسح البحث" data-i18n-aria="clearSearch">×</button>
+            <button id="searchButton" type="button" class="absolute left-1.5 top-1 bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs" data-i18n="search">بحث</button>
+          </div>
         </div>
-    </div>
-
-    <!-- Roulette Modal -->
-    <div id="rouletteModal" onclick="closeModalOnBackdrop(event, 'rouletteModal')" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-        <div onclick="event.stopPropagation()" class="glass-modal w-full max-w-md rounded-3xl p-6 relative border border-white/20 text-center space-y-4">
-            <h3 class="text-xl font-black text-white flex items-center justify-center gap-2"><i class="fa-solid fa-dice text-amber-400"></i> عجلة الاقتراح العشوائي</h3>
-            <p class="text-xs text-gray-400">محتار ماذا تشاهد؟ انقر على الزر ودع العجلة تختار لك عملاً مميزاً!</p>
-            <div class="relative w-48 h-48 mx-auto my-4 flex items-center justify-center">
-                <div id="wheelCircle" class="w-full h-full rounded-full border-4 border-dashed border-amber-400/60 roulette-wheel flex items-center justify-center bg-brand-card shadow-2xl">
-                    <i class="fa-solid fa-film text-4xl text-emerald-400"></i>
-                </div>
-            </div>
-            <div id="rouletteResult" class="hidden glass-card p-3 rounded-2xl border border-emerald-500/40"></div>
-            <button id="spinBtn" onclick="spinRoulette()" class="w-full bg-gradient-to-r from-amber-500 to-emerald-500 text-white font-bold py-3 rounded-2xl shadow-lg transition active:scale-95 text-xs">🎲 لَفّ العجلة</button>
+        <div class="hero-quick-filters flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 text-[11px] font-bold" aria-label="تصفية سريعة" data-i18n-aria="quickFilters">
+          <button type="button" data-filter="trending" aria-pressed="true" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-xl whitespace-nowrap">🔥 <span data-i18n="popularNow">الشائع الآن</span></button>
+          <button type="button" data-filter="action" aria-pressed="false" class="glass-card px-3 py-1 rounded-xl whitespace-nowrap">🎬 <span data-i18n="action">أكشن</span></button>
+          <button type="button" data-filter="anime" aria-pressed="false" class="glass-card px-3 py-1 rounded-xl whitespace-nowrap">🐉 <span data-i18n="animation">أنيميشن</span></button>
+          <button type="button" data-filter="korean" aria-pressed="false" class="glass-card px-3 py-1 rounded-xl whitespace-nowrap">🇰🇷 <span data-i18n="koreanDrama">دراما كورية</span></button>
+          <button type="button" data-filter="scifi" aria-pressed="false" class="glass-card px-3 py-1 rounded-xl whitespace-nowrap">🚀 <span data-i18n="scienceFiction">خيال علمي</span></button>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- Watchlist Modal -->
-    <div id="watchlistModal" onclick="closeModalOnBackdrop(event, 'watchlistModal')" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div onclick="event.stopPropagation()" class="glass-modal w-full max-w-md rounded-3xl p-5 relative border border-white/10">
-            <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-                <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-bookmark text-brand-gold"></i> القائمة المفضلة</h3>
-                <button onclick="closeModal('watchlistModal')" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div id="watchlistContainer" class="max-h-80 overflow-y-auto space-y-2.5 no-scrollbar"></div>
+    <section id="continueWatchingSection" hidden class="max-w-7xl mx-auto px-4 lg:px-8 mt-6">
+      <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 flex items-center justify-between gap-4">
+        <div class="min-w-0"><span data-i18n="continueWatching" class="text-[10px] text-emerald-400 font-bold block">متابعة المشاهدة</span><h2 id="continueTitle" class="font-bold text-white text-sm truncate"></h2></div>
+        <button id="continueBtn" type="button" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl"><i class="fa-solid fa-play" aria-hidden="true"></i> <span data-i18n="resume">إكمال</span></button>
+      </div>
+    </section>
+
+    <section id="discoverShelves" class="max-w-7xl mx-auto px-4 lg:px-8 pt-6 space-y-7" aria-label="اقتراحات المشاهدة" data-i18n-aria="watchSuggestions">
+      <div><div class="shelf-heading"><div class="shelf-heading-title"><span class="w-2 h-5 bg-emerald-500 rounded-full"></span><h2 data-i18n="popularMovies" class="font-bold text-lg">الأكثر شعبية</h2></div><div class="shelf-controls" role="group" data-i18n-aria="popularMovies"><button class="shelf-control" type="button" data-shelf-target="shelfPopular" data-shelf-shift="back" data-i18n-aria="previous" data-i18n-title="previous"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button class="shelf-control" type="button" data-shelf-target="shelfPopular" data-shelf-shift="forward" data-i18n-aria="next" data-i18n-title="next"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button></div></div><div id="shelfPopular" class="shelf-track flex gap-3 overflow-x-auto pb-3" aria-live="polite"></div></div>
+      <div><div class="shelf-heading"><div class="shelf-heading-title"><span class="w-2 h-5 bg-amber-500 rounded-full"></span><h2 data-i18n="newReleases" class="font-bold text-lg">أحدث الإصدارات</h2></div><div class="shelf-controls" role="group" data-i18n-aria="newReleases"><button class="shelf-control" type="button" data-shelf-target="shelfLatest" data-shelf-shift="back" data-i18n-aria="previous" data-i18n-title="previous"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button class="shelf-control" type="button" data-shelf-target="shelfLatest" data-shelf-shift="forward" data-i18n-aria="next" data-i18n-title="next"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button></div></div><div id="shelfLatest" class="shelf-track flex gap-3 overflow-x-auto pb-3" aria-live="polite"></div></div>
+      <div><div class="shelf-heading"><div class="shelf-heading-title"><span class="w-2 h-5 bg-sky-500 rounded-full"></span><h2 data-i18n="topRated" class="font-bold text-lg">الأعلى تقييماً</h2></div><div class="shelf-controls" role="group" data-i18n-aria="topRated"><button class="shelf-control" type="button" data-shelf-target="shelfTopRated" data-shelf-shift="back" data-i18n-aria="previous" data-i18n-title="previous"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button class="shelf-control" type="button" data-shelf-target="shelfTopRated" data-shelf-shift="forward" data-i18n-aria="next" data-i18n-title="next"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button></div></div><div id="shelfTopRated" class="shelf-track flex gap-3 overflow-x-auto pb-3" aria-live="polite"></div></div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 lg:px-8 py-6" aria-labelledby="sectionTitle">
+      <div class="filter-panel flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl border">
+        <div class="filter-title flex items-center gap-2"><span class="w-2.5 h-6 bg-emerald-500 rounded-full" aria-hidden="true"></span><h2 id="sectionTitle" class="text-base md:text-xl font-bold">الأعمال الموصى بها</h2></div>
+        <div class="filter-controls text-xs">
+          <label class="sr-only" for="genreFilter" data-i18n="genre">التصنيف</label><select id="genreFilter" class="glass-card bg-brand-dark px-3 py-1.5 rounded-xl"><option value="">كل التصنيفات</option></select>
+          <label class="sr-only" for="yearFilter" data-i18n="year">السنة</label><select id="yearFilter" class="glass-card bg-brand-dark px-3 py-1.5 rounded-xl"><option value="">جميع السنوات</option></select>
+          <label class="sr-only" for="countryFilter" data-i18n="country">بلد الإنتاج</label><select id="countryFilter" class="glass-card bg-brand-dark px-3 py-1.5 rounded-xl"><option value="">كل البلدان</option></select>
+          <label class="sr-only" for="ratingFilter" data-i18n="minimumRating">أدنى تقييم</label><select id="ratingFilter" class="glass-card bg-brand-dark px-3 py-1.5 rounded-xl"><option value="">كل التقييمات</option></select>
+          <label class="sr-only" for="sortBy" data-i18n="sortBy">ترتيب حسب</label><select id="sortBy" class="glass-card bg-brand-dark px-3 py-1.5 rounded-xl"><option value="popularity.desc" data-i18n="popularity">الأكثر شعبية 🔥</option><option value="vote_average.desc" data-i18n="highestRated">الأعلى تقييماً ⭐</option><option value="release_date.desc" data-i18n="newest">الأحدث إصداراً 🆕</option></select>
+          <button id="resetFiltersBtn" type="button" class="px-3 py-1.5 rounded-xl border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 text-xs" disabled data-i18n="resetFilters">إعادة الضبط</button>
         </div>
-    </div>
+      </div>
+      <p id="filterHint" hidden class="mt-2 px-2 text-[11px] text-amber-300" role="status" data-i18n="filterHint">أزل عبارة البحث لتطبيق الفلاتر.</p>
+      <div id="activeFilters" class="flex flex-wrap gap-2 mt-2" aria-label="الفلاتر المختارة" data-i18n-aria="filtersChosen"></div>
+      <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-6 mt-6" aria-live="polite" aria-busy="false"></div>
+      <div class="mt-10 flex flex-col items-center gap-4">
+        <span id="pageStats" class="text-xs text-gray-400 font-semibold" aria-live="polite"></span>
+        <button id="loadMoreBtn" type="button" hidden class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white font-bold px-8 py-3 rounded-2xl text-xs flex items-center gap-2"><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> تحميل المزيد</button>
+        <nav id="paginationNav" class="flex items-center gap-1.5 flex-wrap justify-center text-xs" aria-label="صفحات النتائج" data-i18n-aria="pages"></nav>
+      </div>
+    </section>
+  </main>
 
-    <!-- Toast Notification Widget -->
-    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-brand-card border border-emerald-500/50 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-        <span id="toastMessage">تمت العملية بنجاح</span>
-    </div>
+  <footer class="border-t border-white/10 py-6 px-4 text-center text-gray-500 text-xs mt-12">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3"><div><strong class="text-white">EfrînFlix Pro</strong> <span>© 2026</span></div><p data-i18n="dataCredit">بيانات الأفلام والمسلسلات مقدمة من TMDB.</p></div>
+  </footer>
 
-    <!-- Footer -->
-    <footer class="border-t border-white/10 py-6 px-4 text-center text-gray-500 text-xs glass-header mt-12">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-2"><span class="font-bold text-white">EfrînFlix Pro</span><span>&copy; 2026</span></div>
-            <p>جميع البيانات مجلبة مجاناً عبر TMDB API</p>
+  <section id="detailsModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md items-center justify-center p-3 sm:p-6" aria-labelledby="detailsHeading" aria-hidden="true">
+    <div class="glass-modal modal-panel w-full max-w-4xl rounded-3xl overflow-hidden flex flex-col" role="dialog" aria-modal="true" tabindex="-1">
+      <div class="sticky top-0 z-10 bg-brand-dark/95 px-5 py-3 border-b border-white/10 flex items-center justify-between"><h2 id="detailsHeading" class="text-xs font-bold text-emerald-400">تفاصيل العمل</h2><button type="button" data-close="detailsModal" class="bg-red-700 text-white px-3 py-1.5 rounded-full text-xs"><span data-i18n="close">إغلاق</span> <i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
+      <div id="detailsContent" class="overflow-y-auto p-5 md:p-8 space-y-6"></div>
+    </div>
+  </section>
+
+  <section id="playerModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-lg items-center justify-center p-2 sm:p-6" aria-labelledby="playerTitle" aria-hidden="true">
+    <div class="w-full max-w-5xl bg-brand-dark rounded-3xl overflow-hidden border border-white/20 flex flex-col modal-panel" role="dialog" aria-modal="true" tabindex="-1">
+        <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-brand-card border-b border-white/10 gap-2">
+        <h2 id="playerTitle" class="font-bold text-xs sm:text-base truncate max-w-[150px] sm:max-w-xs">مشاهدة العمل</h2>
+        <div id="tvSelectors" hidden class="flex items-center gap-2"><label class="sr-only" for="seasonSelect" data-i18n="seasonLabel">الموسم</label><select id="seasonSelect" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg"></select><label class="sr-only" for="episodeSelect" data-i18n="episodeLabel">الحلقة</label><select id="episodeSelect" class="bg-black/60 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-1.5 rounded-lg"></select></div>
+        <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] overflow-x-auto no-scrollbar" role="group" aria-label="اختيار مصدر التشغيل" data-i18n-aria="serverSelection">
+          <button type="button" data-server="1" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-700">سيرفر 1</button><button type="button" data-server="2" class="px-2.5 py-1 rounded-lg text-gray-300">سيرفر 2</button><button type="button" data-server="3" class="px-2.5 py-1 rounded-lg text-gray-300">سيرفر 3</button><button type="button" data-server="4" class="px-2.5 py-1 rounded-lg text-gray-300">سيرفر 4</button><button type="button" data-server="5" class="px-2.5 py-1 rounded-lg text-gray-300">سيرفر 5</button>
         </div>
-    </footer>
+        <div class="flex items-center gap-2"><a id="externalPlayerBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-indigo-700 text-white px-2.5 py-1.5 rounded-xl text-xs" data-i18n="openExternal">فتح خارجي</a><button type="button" data-close="playerModal" class="bg-red-700 text-white px-3 py-1.5 rounded-full text-xs" data-i18n="close">إغلاق</button></div>
+      </div>
+      <div class="relative aspect-video w-full bg-black"><p id="playerLoading" class="absolute inset-0 grid place-items-center text-sm text-gray-400 pointer-events-none" data-i18n="playerLoading">جارٍ تحميل المشغل...</p><iframe id="videoIframe" class="relative w-full h-full bg-transparent" src="" title="مشغل الفيديو" data-i18n-title="videoPlayer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="origin"></iframe></div>
+      <p class="p-3 bg-brand-card text-center text-gray-400 text-[11px]" data-i18n="playerHelp">إذا تعذّر التشغيل، بدّل إلى مصدر آخر أو استخدم زر الفتح الخارجي.</p>
+    </div>
+  </section>
 
-    <!-- JS Application Logic -->
-    <script>
-        // --- Config & State ---
-        const API_KEY = "fca02c6813f7dc2ace00bca1009e315a"; 
-        const BASE_URL = "https://api.themoviedb.org/3";
-        const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
-        const BACKDROP_BASE = "https://image.tmdb.org/t/p/original";
+  <section id="rouletteModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md items-center justify-center p-4" aria-labelledby="rouletteHeading" aria-hidden="true">
+    <div class="glass-modal w-full max-w-md rounded-3xl p-6 text-center space-y-4" role="dialog" aria-modal="true" tabindex="-1"><div class="flex justify-between items-center"><span></span><button type="button" data-close="rouletteModal" aria-label="إغلاق" data-i18n-aria="close" class="text-gray-300 p-2"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><h2 id="rouletteHeading" class="text-xl font-black" data-i18n="rouletteTitle">🎲 عجلة الاقتراح العشوائي</h2><p class="text-xs text-gray-400" data-i18n="rouletteSubtitle">دع الاختيار العشوائي يقترح لك عملاً.</p><div id="wheelCircle" class="w-40 h-40 mx-auto rounded-full border-4 border-dashed border-amber-400/60 grid place-items-center text-4xl text-emerald-400 transition-transform duration-[4000ms]">🎬</div><div id="rouletteResult" hidden class="glass-card p-3 rounded-2xl"></div><button id="spinBtn" type="button" class="w-full bg-amber-500 text-black font-bold py-3 rounded-2xl text-xs" data-i18n="spin">لفّ العجلة</button></div>
+  </section>
 
-        let currentType = 'movie';
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentItems = [];
-        let watchlist = JSON.parse(localStorage.getItem('efrinflix_watchlist_v2') || '[]');
-        let activePlayingItem = { id: null, type: 'movie', season: 1, episode: 1, title: '' };
-        let currentServer = 1;
-        let searchTimeout;
+  <section id="watchlistModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md items-center justify-center p-4" aria-labelledby="watchlistHeading" aria-hidden="true">
+    <div class="glass-modal w-full max-w-2xl max-h-[90vh] rounded-3xl p-5 flex flex-col" role="dialog" aria-modal="true" tabindex="-1">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3 shrink-0"><h2 id="watchlistHeading" class="text-base font-bold"><i class="fa-solid fa-user-astronaut text-amber-400" aria-hidden="true"></i> <span data-i18n="personalSpaceTitle">مساحتي</span></h2><button type="button" data-close="watchlistModal" aria-label="إغلاق" data-i18n-aria="close" class="text-gray-400 p-2"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
+      <nav class="flex gap-2 mb-4 overflow-x-auto shrink-0" role="tablist" aria-label="المساحة الشخصية">
+        <button type="button" data-personal-tab="watchlist" role="tab" aria-selected="true" class="bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold" data-i18n="myLists">قوائمي</button>
+        <button type="button" data-personal-tab="history" role="tab" aria-selected="false" class="glass-card px-3 py-2 rounded-xl text-xs" data-i18n="recentlyViewed">شوهدت مؤخراً</button>
+        <button type="button" data-personal-tab="settings" role="tab" aria-selected="false" class="glass-card px-3 py-2 rounded-xl text-xs" data-i18n="settings">الإعدادات</button>
+      </nav>
+      <section id="personalWatchlistPanel" class="min-h-0 flex flex-col" role="tabpanel">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <label for="collectionFilter" class="sr-only" data-i18n="chooseList">اختر قائمة</label><select id="collectionFilter" class="glass-card bg-brand-dark px-3 py-2 rounded-xl text-xs flex-1 min-w-32"></select>
+          <button id="deleteCollectionBtn" type="button" class="text-red-300 border border-red-500/30 px-3 py-2 rounded-xl text-xs" aria-label="حذف القائمة" data-i18n-aria="deleteList"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+        </div>
+        <form id="createCollectionForm" class="flex gap-2 mb-3">
+          <label for="newCollectionName" class="sr-only" data-i18n="newList">اسم القائمة الجديدة</label>
+          <input id="newCollectionName" maxlength="32" class="glass-card min-w-0 flex-1 px-3 py-2 rounded-xl text-xs" placeholder="اسم قائمة جديدة" data-i18n-placeholder="newListPlaceholder">
+          <button type="submit" class="bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold" data-i18n="createList">إنشاء</button>
+        </form>
+        <div id="watchlistContainer" class="min-h-0 max-h-[48vh] overflow-y-auto space-y-2.5"></div>
+      </section>
+      <section id="personalHistoryPanel" hidden class="min-h-0" role="tabpanel">
+        <div class="flex justify-between items-center mb-3"><p class="text-xs text-gray-400" data-i18n="historySavedLocally">يُحفظ السجل على هذا الجهاز فقط.</p><button id="clearHistoryBtn" type="button" class="text-red-300 text-xs px-2 py-1" data-i18n="clearHistory">مسح السجل</button></div>
+        <div id="historyContainer" class="max-h-[58vh] overflow-y-auto space-y-2.5"></div>
+      </section>
+      <section id="personalSettingsPanel" hidden class="space-y-4" role="tabpanel">
+        <div><label for="settingsLanguageSelect" class="block text-xs text-gray-300 mb-2" data-i18n="language">اللغة</label><select id="settingsLanguageSelect" class="glass-card bg-brand-dark px-3 py-2 rounded-xl text-sm"><option value="ar">عربي</option><option value="ku">Kurdî</option><option value="en">English</option></select></div>
+        <div class="flex flex-wrap gap-2"><button id="exportDataBtn" type="button" class="bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> <span data-i18n="exportBackup">تصدير نسخة احتياطية</span></button><button id="importDataBtn" type="button" class="glass-card px-3 py-2 rounded-xl text-xs"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span data-i18n="importBackup">استيراد نسخة احتياطية</span></button><input id="importDataInput" type="file" accept="application/json,.json" hidden></div>
+        <p class="text-[11px] leading-relaxed text-gray-400" data-i18n="localPrivacy">قوائمك وسجل المشاهدة محفوظة محلياً في متصفحك، ولا تحتاج إلى إنشاء حساب.</p>
+      </section>
+    </div>
+  </section>
 
-        const genresList = {
-            movie: [
-                {id: 28, name: "أكشن"}, {id: 878, name: "خيال علمي"}, {id: 27, name: "رعب"},
-                {id: 18, name: "دراما"}, {id: 16, name: "أنيميشن"}, {id: 35, name: "كوميديا"}
-            ],
-            tv: [
-                {id: 10759, name: "أكشن ومغامرة"}, {id: 16, name: "أنيميشن"}, {id: 35, name: "كوميديا"},
-                {id: 18, name: "دراما"}, {id: 9648, name: "غموض"}, {id: 10765, name: "خيال علمي"}
-            ]
-        };
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-[60] translate-y-24 opacity-0 transition-all duration-300 bg-brand-card border border-emerald-500/50 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs" role="status" aria-live="polite"><i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400" aria-hidden="true"></i><span id="toastMessage"></span></div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            populateGenreDropdown();
-            fetchHeroMedia();
-            fetchMedia();
-            updateWatchlistUI();
-            checkContinueWatching();
-        });
+  <script>
+  (() => {
+    'use strict';
 
-        function showToast(message, icon = "fa-circle-check", colorClass = "text-emerald-400") {
-            const toast = document.getElementById('toastNotification');
-            const msg = document.getElementById('toastMessage');
-            const icn = document.getElementById('toastIcon');
-
-            msg.innerText = message;
-            icn.className = `fa-solid ${icon} ${colorClass} text-base`;
-
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3200);
+    // Kept exactly as supplied. A browser-side TMDB key is visible to visitors.
+    const API_KEY = "fca02c6813f7dc2ace00bca1009e315a";
+    const BASE_URL = "https://api.themoviedb.org/3";
+    const IMAGE_BASE = "https://image.tmdb.org/t/p/";
+    const genres = {
+      movie: [{id:28,name:'أكشن'},{id:878,name:'خيال علمي'},{id:27,name:'رعب'},{id:18,name:'دراما'},{id:16,name:'أنيميشن'},{id:35,name:'كوميديا'}],
+      tv: [{id:10759,name:'أكشن ومغامرة'},{id:16,name:'أنيميشن'},{id:35,name:'كوميديا'},{id:18,name:'دراما'},{id:9648,name:'غموض'},{id:10765,name:'خيال علمي'}]
+    };
+    const translations={
+      ar:{homeLabel:'العودة إلى الصفحة الرئيسية',premium:'سينما البريميوم Pro',language:'اللغة',contentType:'نوع المحتوى',movies:'أفلام',series:'مسلسلات',downloadApk:' تنزيل APK',installApp:' تثبيت التطبيق',suggest:' اقتراح',personalSpace:'فتح المساحة الشخصية',mySpace:' مساحتي',trendingToday:'الأكثر تداولاً اليوم',heroLoading:'جاري تحميل البانر...',searchLabel:'ابحث عن فيلم أو مسلسل',searchPlaceholder:'ابحث عن فيلم أو مسلسل...',clearSearch:'مسح البحث',search:'بحث',popularNow:'الشائع الآن',action:'أكشن',animation:'أنيميشن',koreanDrama:'دراما كورية',scienceFiction:'خيال علمي',continueWatching:'متابعة المشاهدة',resume:'إكمال',popularMovies:'الأكثر شعبية',newReleases:'أحدث الإصدارات',topRated:'الأعلى تقييماً',recommended:'الأعمال الموصى بها',genre:'التصنيف',allGenres:'كل التصنيفات',year:'السنة',allYears:'جميع السنوات',country:'بلد الإنتاج',allCountries:'كل البلدان',minimumRating:'أدنى تقييم',allRatings:'كل التقييمات',sortBy:'ترتيب حسب',popularity:'الأكثر شعبية 🔥',highestRated:'الأعلى تقييماً ⭐',newest:'الأحدث إصداراً 🆕',resetFilters:'إعادة الضبط',filterHint:'أزل عبارة البحث لتطبيق الفلاتر.',filtersChosen:'الفلاتر المختارة',loadMore:'تحميل المزيد',pageStats:'الصفحة {0} من {1}',previous:'السابق',next:'التالي',errorTitle:'تعذّر تحميل الأعمال',networkRetry:'تحقق من اتصالك بالإنترنت، ثم حاول مرة أخرى.',retry:'إعادة المحاولة',emptySearchTitle:'لم نعثر على نتائج',emptyFilteredTitle:'لا توجد أعمال مطابقة',emptyGenericTitle:'لا توجد نتائج',emptySearchText:'جرّب عنواناً آخر أو امسح عبارة البحث.',emptyFilteredText:'جرّب إزالة بعض الفلاتر لعرض المزيد من الأعمال.',clearSearchAction:'مسح البحث',resetFiltersAction:'إعادة ضبط الفلاتر',reload:'إعادة التحميل',searchResults:'نتائج البحث: {0}',moviesPopular:'الأفلام الشائعة',seriesPopular:'المسلسلات الشائعة',actionWorks:'أعمال أكشن',animationWorks:'أعمال أنيميشن',koreanWorks:'دراما كورية',scifiWorks:'أعمال خيال علمي',dataCredit:'بيانات الأفلام والمسلسلات مقدمة من TMDB.',details:'تفاصيل العمل',close:'إغلاق',watchNow:'مشاهدة الآن',save:'حفظ',saved:'محفوظ',share:'مشاركة',noDescription:'لا يوجد وصف متاح.',cast:'أبرز الممثلين:',movie:'فيلم',seriesType:'مسلسل',seasons:'مواسم',trailer:'إعلان',loadingDetails:'جارٍ تحميل التفاصيل...',detailsError:'تعذّر تحميل التفاصيل. تحقق من الاتصال ثم حاول مرة أخرى.',notAvailable:'لا توجد صورة',imageError:'تعذّر تحميل الصورة',openExternal:'فتح خارجي',playerLoading:'جارٍ تحميل المشغل...',playerHelp:'إذا تعذّر التشغيل، بدّل إلى مصدر آخر أو استخدم زر الفتح الخارجي.',server:'سيرفر {0}',season:'الموسم {0}',episode:'الحلقة {0}',loading:'جارٍ التحميل...',episodeName:'الحلقة {0}: {1}',rouletteTitle:'عجلة الاقتراح العشوائي',rouletteSubtitle:'دع الاختيار العشوائي يقترح لك عملاً.',spin:'لفّ العجلة',pickedForYou:'اخترنا لك:',showDetails:'عرض التفاصيل',rouletteError:'تعذّر اختيار عمل الآن. حاول مجددًا.',personalSpaceTitle:'مساحتي',myLists:'قوائمي',recentlyViewed:'شوهدت مؤخراً',settings:'الإعدادات',chooseList:'اختر قائمة',allLists:'كل القوائم',favorites:'المفضلة',watchLater:'أريد مشاهدته',deleteList:'حذف القائمة',newList:'اسم القائمة الجديدة',newListPlaceholder:'اسم قائمة جديدة',createList:'إنشاء',emptyList:'هذه القائمة فارغة حالياً.',addToList:'أُضيف إلى {0}.',removeFavorite:'تمت الإزالة من القائمة.',listCreated:'تم إنشاء القائمة.',listDeleted:'حُذفت القائمة ونُقلت أعمالها إلى المفضلة.',historySavedLocally:'يُحفظ السجل على هذا الجهاز فقط.',clearHistory:'مسح السجل',emptyHistory:'لا توجد أعمال شوهدت مؤخراً.',historyCleared:'تم مسح سجل المشاهدة.',exportBackup:'تصدير نسخة احتياطية',importBackup:'استيراد نسخة احتياطية',localPrivacy:'قوائمك وسجل المشاهدة محفوظة محلياً في متصفحك، ولا تحتاج إلى إنشاء حساب.',backupExported:'تم تنزيل النسخة الاحتياطية.',backupImported:'تم استيراد النسخة الاحتياطية ودمجها.',backupInvalid:'تعذّر قراءة النسخة. اختر ملف EfrînFlix JSON صالحاً.',backupLarge:'حجم الملف أكبر من المسموح.',collectionLimit:'يمكن إنشاء 30 قائمة كحد أقصى.',collectionNameRequired:'اكتب اسماً للقائمة أولاً.',collectionExists:'توجد قائمة بهذا الاسم بالفعل.',listMoved:'تم نقل العمل إلى {0}.',listLimit:'وصلت القائمة إلى الحد الأقصى.',favoriteAdded:'تمت الإضافة إلى المفضلة.',favoriteRemoved:'تمت الإزالة من المفضلة.',savedLocally:'تم الحفظ على هذا الجهاز.',saveError:'تعذّر حفظ البيانات على هذا الجهاز.',shareCopied:'نُسخ رابط الموقع.',shareError:'تعذّرت مشاركة الرابط.',filterPopularity:'الأكثر شعبية',filterRating:'التقييم {0} فأعلى',countryKR:'كوريا الجنوبية',countryUS:'الولايات المتحدة',countryGB:'المملكة المتحدة',countryTR:'تركيا',countryJP:'اليابان',countryCN:'الصين',countryIN:'الهند',countryFR:'فرنسا',countryDE:'ألمانيا',countryES:'إسبانيا',countryIT:'إيطاليا',countryTW:'تايوان'},
+      en:{homeLabel:'Back to home',premium:'Premium cinema Pro',language:'Language',contentType:'Content type',movies:'Movies',series:'TV shows',downloadApk:' Download APK',installApp:' Install app',suggest:' Pick for me',personalSpace:'Open your space',mySpace:' My space',trendingToday:'Trending today',heroLoading:'Loading featured title...',searchLabel:'Search movies or TV shows',searchPlaceholder:'Search movies or TV shows...',clearSearch:'Clear search',search:'Search',popularNow:'Popular now',action:'Action',animation:'Animation',koreanDrama:'Korean drama',scienceFiction:'Sci-fi',continueWatching:'Continue watching',resume:'Resume',popularMovies:'Popular',newReleases:'New releases',topRated:'Top rated',recommended:'Recommended titles',genre:'Genre',allGenres:'All genres',year:'Year',allYears:'All years',country:'Origin country',allCountries:'All countries',minimumRating:'Minimum rating',allRatings:'Any rating',sortBy:'Sort by',popularity:'Most popular 🔥',highestRated:'Top rated ⭐',newest:'Newest release 🆕',resetFilters:'Reset',filterHint:'Clear your search to apply filters.',filtersChosen:'Selected filters',loadMore:'Load more',pageStats:'Page {0} of {1}',previous:'Previous',next:'Next',errorTitle:'Could not load titles',networkRetry:'Check your connection and try again.',retry:'Try again',emptySearchTitle:'No results found',emptyFilteredTitle:'No matching titles',emptyGenericTitle:'No results',emptySearchText:'Try another title or clear your search.',emptyFilteredText:'Remove a filter to see more titles.',clearSearchAction:'Clear search',resetFiltersAction:'Reset filters',reload:'Reload',searchResults:'Search results: {0}',moviesPopular:'Popular movies',seriesPopular:'Popular TV shows',actionWorks:'Action titles',animationWorks:'Animation titles',koreanWorks:'Korean dramas',scifiWorks:'Sci-fi titles',dataCredit:'Movie and TV data provided by TMDB.',details:'Title details',close:'Close',watchNow:'Watch now',save:'Save',saved:'Saved',share:'Share',noDescription:'No description available.',cast:'Featured cast:',movie:'Movie',seriesType:'TV show',seasons:'seasons',trailer:'Trailer',loadingDetails:'Loading details...',detailsError:'Could not load details. Check your connection and try again.',notAvailable:'No image available',imageError:'Image could not be loaded',openExternal:'Open externally',playerLoading:'Loading player...',playerHelp:'If playback fails, try another source or open it externally.',server:'Server {0}',season:'Season {0}',episode:'Episode {0}',loading:'Loading...',episodeName:'Episode {0}: {1}',rouletteTitle:'Random pick',rouletteSubtitle:'Let us pick something for you.',spin:'Spin',pickedForYou:'Picked for you:',showDetails:'View details',rouletteError:'Could not pick a title. Try again.',personalSpaceTitle:'My space',myLists:'My lists',recentlyViewed:'Recently viewed',settings:'Settings',chooseList:'Choose a list',allLists:'All lists',favorites:'Favorites',watchLater:'Watch later',deleteList:'Delete list',newList:'New list name',newListPlaceholder:'Name a new list',createList:'Create',emptyList:'This list is empty for now.',addToList:'Added to {0}.',removeFavorite:'Removed from your list.',listCreated:'List created.',listDeleted:'List deleted; its titles were moved to Favorites.',historySavedLocally:'Your history is stored on this device only.',clearHistory:'Clear history',emptyHistory:'No recently viewed titles.',historyCleared:'Viewing history cleared.',exportBackup:'Export backup',importBackup:'Import backup',localPrivacy:'Your lists and viewing history stay in this browser. No account is required.',backupExported:'Backup downloaded.',backupImported:'Backup imported and merged.',backupInvalid:'Could not read that file. Choose a valid EfrînFlix JSON backup.',backupLarge:'The file is larger than allowed.',collectionLimit:'You can create up to 30 lists.',collectionNameRequired:'Enter a list name first.',collectionExists:'A list with that name already exists.',listMoved:'Moved to {0}.',listLimit:'This list has reached its limit.',favoriteAdded:'Added to Favorites.',favoriteRemoved:'Removed from Favorites.',savedLocally:'Saved on this device.',saveError:'Could not save data on this device.',shareCopied:'Site link copied.',shareError:'Could not share the link.',filterPopularity:'Most popular',filterRating:'Rating {0} and up',countryKR:'South Korea',countryUS:'United States',countryGB:'United Kingdom',countryTR:'Türkiye',countryJP:'Japan',countryCN:'China',countryIN:'India',countryFR:'France',countryDE:'Germany',countryES:'Spain',countryIT:'Italy',countryTW:'Taiwan'},
+      ku:{homeLabel:'Vegere malê',premium:'Sînemaya premium Pro',language:'Ziman',contentType:'Cureya naverokê',movies:'Fîlm',series:'Rêzefîlm',downloadApk:' Daxistina APK',installApp:' Sazkirina sepanê',suggest:' Pêşniyar',personalSpace:'Vekirina cihê min',mySpace:' Cihê min',trendingToday:'Îro populer',heroLoading:'Tîpan tê barkirin...',searchLabel:'Li fîlm an rêzefîlmê bigere',searchPlaceholder:'Li fîlm an rêzefîlmê bigere...',clearSearch:'Lêgerînê paqij bike',search:'Lêgerîn',popularNow:'Niha populer',action:'Aksiyon',animation:'Anîmasyon',koreanDrama:'Drama Koreyî',scienceFiction:'Zanistî-fîkşin',continueWatching:'Temaşekirinê bidomîne',resume:'Bidomîne',popularMovies:'Yên herî populer',newReleases:'Derketinên nû',topRated:'Yên herî nirxandî',recommended:'Fîlmên pêşniyarkirî',genre:'Cure',allGenres:'Hemû cure',year:'Sal',allYears:'Hemû sal',country:'Welatê hilberînê',allCountries:'Hemû welat',minimumRating:'Nirxandina herî kêm',allRatings:'Hemû nirxandin',sortBy:'Rêzkirin',popularity:'Herî populer 🔥',highestRated:'Herî nirxandî ⭐',newest:'Herî nû 🆕',resetFilters:'Vesazkirin',filterHint:'Lêgerînê paqij bike da ku fîltre bên sepandin.',filtersChosen:'Fîltreyên hilbijartî',loadMore:'Zêdetir bar bike',pageStats:'Rûpela {0} ji {1}',previous:'Paş',next:'Pêş',errorTitle:'Barkirina fîlman pêk nehat',networkRetry:'Girêdana înternetê kontrol bike û dîsa biceribîne.',retry:'Dîsa biceribîne',emptySearchTitle:'Encam nehat dîtin',emptyFilteredTitle:'Fîlmên lihevhatî tune ne',emptyGenericTitle:'Encam tune ne',emptySearchText:'Navê din biceribîne an lêgerînê paqij bike.',emptyFilteredText:'Fîlterekê rake da ku zêdetir fîlm bibînî.',clearSearchAction:'Lêgerînê paqij bike',resetFiltersAction:'Fîltran vesaz bike',reload:'Dîsa bar bike',searchResults:'Encamên lêgerînê: {0}',moviesPopular:'Fîlmên populer',seriesPopular:'Rêzefîlmên populer',actionWorks:'Fîlmên aksiyonê',animationWorks:'Fîlmên anîmasyonê',koreanWorks:'Dramayên Koreyî',scifiWorks:'Fîlmên zanistî-fîkşinê',dataCredit:'Daneyên fîlm û rêzefîlman ji TMDB in.',details:'Kitekitên fîlmê',close:'Bigire',watchNow:'Niha temaşe bike',save:'Tomar bike',saved:'Tomarkirî',share:'Parve bike',noDescription:'Şirove tune ye.',cast:'Lîstikvanên sereke:',movie:'Fîlm',seriesType:'Rêzefîlm',seasons:'dews',trailer:'Trailer',loadingDetails:'Kitekit tê barkirin...',detailsError:'Kitekit nehat barkirin. Girêdanê kontrol bike û dîsa biceribîne.',notAvailable:'Wêne tune ye',imageError:'Wêne nehat barkirin',openExternal:'Derveyî veke',playerLoading:'Lîstikvan tê barkirin...',playerHelp:'Heke temaşe pêk nehat, çavkaniyeke din an vekirina derveyî biceribîne.',server:'Pêşkêşkar {0}',season:'Demsala {0}',episode:'Beşa {0}',loading:'Tê barkirin...',episodeName:'Beşa {0}: {1}',rouletteTitle:'Pêşniyara bêserûber',rouletteSubtitle:'Bihêle em tiştekî ji te re hilbijêrin.',spin:'Bigerîne',pickedForYou:'Ji bo te hilbijart:',showDetails:'Kitekitan nîşan bide',rouletteError:'Hilbijartin pêk nehat. Dîsa biceribîne.',personalSpaceTitle:'Cihê min',myLists:'Lîsteyên min',recentlyViewed:'Nû temaşekirî',settings:'Mîheng',chooseList:'Lîsteyekê hilbijêre',allLists:'Hemû lîste',favorites:'Hezkirî',watchLater:'Paşê temaşe bike',deleteList:'Lîsteyê jê bibe',newList:'Navê lîsteya nû',newListPlaceholder:'Navê lîsteyeke nû',createList:'Biafirîne',emptyList:'Niha ev lîste vala ye.',addToList:'Li {0} hat zêdekirin.',removeFavorite:'Ji lîsteya te hat rakirin.',listCreated:'Lîste hat afirandin.',listDeleted:'Lîste hat jêbirin; fîlmên wê hatin veguheztin lîsteya Hezkirî.',historySavedLocally:'Dîrok tenê li ser vê amûrê tê tomar kirin.',clearHistory:'Dîrokê paqij bike',emptyHistory:'Fîlmên nû temaşekirî tune ne.',historyCleared:'Dîroka temaşekirinê hat paqijkirin.',exportBackup:'Kopiyê derxe',importBackup:'Kopiyê têxe hundir',localPrivacy:'Lîste û dîroka te di vê gerokê de dimînin. Hesab pêwîst nîne.',backupExported:'Kopî hate daxistin.',backupImported:'Kopî hate têxistin û tevlihevkirin.',backupInvalid:'Pel nehat xwendin. Kopiyeke EfrînFlix JSON ya rast hilbijêre.',backupLarge:'Mezinahiya pelê ji sînorê derbas dibe.',collectionLimit:'Herî zêde 30 lîste dikarî biafirînî.',collectionNameRequired:'Berî her tiştî navekê binivîse.',collectionExists:'Lîsteyek bi vî navî heye.',listMoved:'Hate veguhestin {0}.',listLimit:'Ev lîste gihîştiye sînorê xwe.',favoriteAdded:'Li lîsteya Hezkirî hate zêdekirin.',favoriteRemoved:'Ji lîsteya Hezkirî hate rakirin.',savedLocally:'Li ser vê amûrê hate tomarkirin.',saveError:'Daneyên li ser vê amûrê nehatin tomarkirin.',shareCopied:'Girêdana malperê hate kopîkirin.',shareError:'Parvekirina girêdanê pêk nehat.',filterPopularity:'Herî populer',filterRating:'Nirxandina {0} û zêdetir',countryKR:'Koreya Başûr',countryUS:'Dewletên Yekbûyî',countryGB:'Keyaniya Yekbûyî',countryTR:'Tirkiye',countryJP:'Japonya',countryCN:'Çîn',countryIN:'Hindistan',countryFR:'Fransa',countryDE:'Almanya',countryES:'Spanya',countryIT:'Îtalya',countryTW:'Taywan'}
+    };
+    const genreText={
+      ar:{actionAdventure:'أكشن ومغامرة',dramaGenre:'دراما',horrorGenre:'رعب',comedyGenre:'كوميديا',mysteryGenre:'غموض'},
+      en:{actionAdventure:'Action & Adventure',dramaGenre:'Drama',horrorGenre:'Horror',comedyGenre:'Comedy',mysteryGenre:'Mystery'},
+      ku:{actionAdventure:'Aksiyon û serpêhatî',dramaGenre:'Drama',horrorGenre:'Tirsnak',comedyGenre:'Komedî',mysteryGenre:'Mister'}
+    };
+    const commonText={
+      ar:{videoPlayer:'مشغل الفيديو',watchSuggestions:'اقتراحات المشاهدة',pages:'صفحات النتائج',quickFilters:'تصفية سريعة',seasonLabel:'الموسم',episodeLabel:'الحلقة',serverSelection:'اختيار مصدر التشغيل',nextPageError:'تعذّر تحميل الصفحة التالية. حاول مجدداً.',heroFallback:'استمتع باستكشاف الأعمال السينمائية.',addFavorite:'إضافة للمفضلة',removeTitle:'إزالة العمل',shelfError:'تعذّر تحميل هذا الصف.',clearHistoryConfirm:'هل تريد مسح سجل المشاهدة؟',deleteListConfirm:'حذف القائمة «{0}» ونقل أعمالها إلى المفضلة؟'},
+      en:{videoPlayer:'Video player',watchSuggestions:'Watch suggestions',pages:'Result pages',quickFilters:'Quick filters',seasonLabel:'Season',episodeLabel:'Episode',serverSelection:'Choose playback source',nextPageError:'Could not load the next page. Try again.',heroFallback:'Discover your next favorite.',addFavorite:'Add to favorites',removeTitle:'Remove title',shelfError:'This row could not be loaded.',clearHistoryConfirm:'Clear your viewing history?',deleteListConfirm:'Delete “{0}” and move its titles to Favorites?'},
+      ku:{videoPlayer:'Lêxistoka vîdyoyê',watchSuggestions:'Pêşniyarên temaşekirinê',pages:'Rûpelên encaman',quickFilters:'Fîltreyên bilez',seasonLabel:'Demsal',episodeLabel:'Beş',serverSelection:'Çavkaniya temaşekirinê hilbijêre',nextPageError:'Rûpela paşê nehat barkirin. Dîsa biceribîne.',heroFallback:'Fîlmeke nû ya xwe bibîne.',addFavorite:'Li Hezkirî zêde bike',removeTitle:'Fîlmê rake',shelfError:'Ev rêz nehat barkirin.',clearHistoryConfirm:'Dîroka temaşekirinê paqij bike?',deleteListConfirm:'{0} jê bibe û fîlmên wê veguhezîne Hezkirî?'}
+    };
+    function readLanguage() { try { const value=localStorage.getItem('efrinflix_language_v1'); return ['ar','ku','en'].includes(value)?value:'ar'; } catch { return 'ar'; } }
+    function t(key,...values) { const language=state?.language||'ar'; let text=(translations[language]||translations.ar)[key]||genreText[language]?.[key]||commonText[language]?.[key]||translations.ar[key]||genreText.ar[key]||commonText.ar[key]||key; values.forEach((value,index)=>text=text.replace(`{${index}}`,String(value))); return text; }
+    function readCollections() {
+      try {
+        const value=JSON.parse(localStorage.getItem('efrinflix_collections_v1')||'[]');
+        const custom=Array.isArray(value)?value.filter(name=>typeof name==='string'&&name.trim()&&name.length<=32&&!['favorites','watch-later'].includes(name)).slice(0,28):[];
+        return [...new Set(['favorites','watch-later',...custom])];
+      } catch { return ['favorites','watch-later']; }
+    }
+    function readHistory() {
+      try {
+        const value=JSON.parse(localStorage.getItem('efrinflix_history_v1')||'[]');
+        if(!Array.isArray(value))return [];
+        return value.filter(item=>item&&Number.isInteger(Number(item.id))&&['movie','tv'].includes(item.type)).slice(0,100)
+          .map(item=>({id:Number(item.id),type:item.type,title:String(item.title||'Untitled').slice(0,300),poster_path:validImagePath(item.poster_path)?item.poster_path:'',viewedAt:Number(item.viewedAt)||Date.now()}));
+      } catch { return []; }
+    }
+    const state = {
+      type:'movie', language:readLanguage(), page:1, totalPages:1, items:[], collections:readCollections(), watchlist:readList(), history:readHistory(), activeCollection:'all', personalTab:'watchlist', playing:null, server:1, quickFilter:'trending', shelfControllers:[], shelfToken:0,
+      listController:null, heroController:null, detailsController:null, seasonController:null,
+      listToken:0, heroToken:0, detailsToken:0, seasonToken:0, loading:false,
+      searchTimer:0, toastTimer:0, rouletteTimer:0, deferredPrompt:null, lastFocused:null
+    };
+    const $ = (selector, root=document) => root.querySelector(selector);
+    const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
+    const visibleDialogs = () => $$('section[id$="Modal"]:not(.hidden) [aria-modal="true"]');
+    const apiLocale = () => state.language==='ar'?'ar-SA':'en-US';
+    function applyTranslations() {
+      const language=state.language;
+      document.documentElement.lang=language==='ku'?'ku':language;
+      document.documentElement.dir=language==='ar'?'rtl':'ltr'; document.body.dir=document.documentElement.dir;
+      document.title=language==='ar'?'EfrînFlix Pro - منصة السينما العالمية والمسلسلات':language==='ku'?'EfrînFlix Pro - Fîlm û Rêzefîlm':'EfrînFlix Pro - Movies & TV';
+      $('meta[name="description"]').content=language==='ar'?'EfrînFlix Pro: استكشف الأفلام والمسلسلات والبيانات السينمائية.':language==='ku'?'EfrînFlix Pro: Fîlm û rêzefîlmên cîhanê bibîne.':'EfrînFlix Pro: Discover movies, TV shows, and cinema details.';
+      $$('[data-i18n]').forEach(element=>{element.textContent=t(element.dataset.i18n);});
+      $$('[data-i18n-placeholder]').forEach(element=>{element.placeholder=t(element.dataset.i18nPlaceholder);});
+      $$('[data-i18n-aria]').forEach(element=>{element.setAttribute('aria-label',t(element.dataset.i18nAria));});
+      $$('[data-i18n-title]').forEach(element=>{element.title=t(element.dataset.i18nTitle);element.setAttribute('title',t(element.dataset.i18nTitle));});
+      $('#languageSelect').value=language; $('#settingsLanguageSelect').value=language;
+      $('#contentTypeGroup').setAttribute('aria-label',t('contentType'));
+      $('#watchlistOpenBtn').setAttribute('aria-label',t('personalSpace'));
+      $('#detailsHeading').textContent=t('details');
+      $('#searchInput').placeholder=t('searchPlaceholder');
+      $('#videoIframe').title=t('videoPlayer');
+      $$('[data-server]').forEach(button=>{button.textContent=t('server',button.dataset.server);});
+      renderGenres(); renderYears(); renderCountries(); renderRatings(); renderCollections(); syncFilterControls();
+    }
+    const make = (tag, className='', text='') => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined && text !== null) node.textContent = String(text);
+      return node;
+    };
+    const icon = (name, className='') => {
+      const node = make('i', `fa-solid ${name} ${className}`.trim());
+      node.setAttribute('aria-hidden','true');
+      return node;
+    };
+    const addButton = (parent, text, className, handler, iconName='') => {
+      const button = make('button', className);
+      button.type = 'button';
+      if (iconName) button.append(icon(iconName), document.createTextNode(' '));
+      button.append(document.createTextNode(text));
+      button.addEventListener('click', handler);
+      parent.append(button);
+      return button;
+    };
+    function readList() {
+      try {
+        const value = JSON.parse(localStorage.getItem('efrinflix_watchlist_v2') || '[]');
+        if (!Array.isArray(value)) return [];
+        const collections=readCollections();
+        return value.filter(item => item && Number.isInteger(Number(item.id)) && ['movie','tv'].includes(item.type))
+          .slice(0,500).map(item => ({ id:Number(item.id), type:item.type, title:String(item.title || 'Untitled').slice(0,300), poster_path:validImagePath(item.poster_path) ? item.poster_path : '', collection:collections.includes(item.collection)?item.collection:'favorites' }));
+      } catch { return []; }
+    }
+    function save(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+      catch { showToast(t('saveError'), 'fa-triangle-exclamation', 'text-amber-400'); return false; }
+    }
+    function validImagePath(path) { return typeof path === 'string' && /^\/[A-Za-z0-9/_-]+\.(?:jpg|jpeg|png|webp)$/i.test(path); }
+    function imageUrl(path, size='w500') { return validImagePath(path) ? `${IMAGE_BASE}${size}${path}` : ''; }
+    function mediaTitle(item) { return String(item?.title || item?.name || 'بدون عنوان').slice(0,300); }
+    function yearOf(item) { return String(item?.release_date || item?.first_air_date || '').slice(0,4) || '—'; }
+    function showToast(message, iconName='fa-circle-check', color='text-emerald-400') {
+      const toast = $('#toastNotification');
+      $('#toastMessage').textContent = message;
+      $('#toastIcon').className = `fa-solid ${iconName} ${color}`;
+      toast.classList.remove('translate-y-24','opacity-0');
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(() => toast.classList.add('translate-y-24','opacity-0'), 3000);
+    }
+    async function api(path, signal) {
+      const separator = path.includes('?') ? '&' : '?';
+      const response = await fetch(`${BASE_URL}${path}${separator}api_key=${API_KEY}`, { signal, headers:{ Accept:'application/json' } });
+      if (!response.ok) throw new Error(`TMDB request failed (${response.status})`);
+      const data = await response.json();
+      if (!data || typeof data !== 'object') throw new Error('Invalid TMDB response');
+      return data;
+    }
+    function renderGenres() {
+      const select = $('#genreFilter');
+      const current=select.value, keys={28:'action',878:'scienceFiction',27:'horrorGenre',18:'dramaGenre',16:'animation',35:'comedyGenre',10759:'actionAdventure',9648:'mysteryGenre',10765:'scienceFiction'};
+      select.replaceChildren(new Option(t('allGenres'),''));
+      for (const genre of genres[state.type]) select.add(new Option(t(keys[genre.id]||'genre'), String(genre.id)));
+      if([...select.options].some(option=>option.value===current))select.value=current;
+    }
+    function renderYears() {
+      const select=$('#yearFilter');
+      const current=select.value;
+      select.replaceChildren(new Option(t('allYears'),''));
+      for(let year=new Date().getFullYear();year>=1970;year--) select.add(new Option(String(year),String(year)));
+      if([...select.options].some(option=>option.value===current))select.value=current;
+    }
+    function renderCountries() {
+      const select=$('#countryFilter'), current=select.value;
+      const countries=[['US','countryUS'],['GB','countryGB'],['KR','countryKR'],['TR','countryTR'],['JP','countryJP'],['CN','countryCN'],['IN','countryIN'],['FR','countryFR'],['DE','countryDE'],['ES','countryES'],['IT','countryIT'],['TW','countryTW']];
+      select.replaceChildren(new Option(t('allCountries'),''));
+      for(const [code,key] of countries)select.add(new Option(t(key),code));
+      if([...select.options].some(option=>option.value===current))select.value=current;
+    }
+    function renderRatings() {
+      const select=$('#ratingFilter'), current=select.value;
+      select.replaceChildren(new Option(t('allRatings'),''));
+      for(const score of [6,7,8,9])select.add(new Option(t('filterRating',score),String(score)));
+      if([...select.options].some(option=>option.value===current))select.value=current;
+    }
+    function collectionName(id) { return id==='favorites'?t('favorites'):id==='watch-later'?t('watchLater'):id; }
+    function renderCollections() {
+      const select=$('#collectionFilter'); if(!select)return;
+      const current=state.activeCollection;
+      select.replaceChildren(new Option(t('allLists'),'all'));
+      for(const collection of state.collections)select.add(new Option(collectionName(collection),collection));
+      select.value=[...select.options].some(option=>option.value===current)?current:'all';
+      state.activeCollection=select.value;
+      $('#deleteCollectionBtn').disabled=['all','favorites','watch-later'].includes(state.activeCollection);
+    }
+    function renderActiveFilters() {
+      const container=$('#activeFilters'); if(!container)return;
+      container.replaceChildren();
+      const choices=[['genreFilter','genre'],['yearFilter','year'],['countryFilter','country'],['ratingFilter','minimumRating']];
+      for(const [id,label] of choices) {
+        const select=$(`#${id}`); if(!select.value)continue;
+        const option=select.selectedOptions[0], chip=make('button','rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[10px] text-emerald-200',`${t(label)}: ${option.textContent} ×`);
+        chip.type='button'; chip.addEventListener('click',()=>{select.value='';state.quickFilter='trending';state.page=1;syncFilterControls();loadMedia();}); container.append(chip);
+      }
+      if($('#sortBy').value!=='popularity.desc') {
+        const chip=make('button','rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[10px] text-emerald-200',`${t('sortBy')}: ${$('#sortBy').selectedOptions[0].textContent} ×`);
+        chip.type='button'; chip.addEventListener('click',()=>{$('#sortBy').value='popularity.desc';state.page=1;syncFilterControls();loadMedia();}); container.append(chip);
+      }
+    }
+    function syncFilterControls() {
+      const searching=Boolean($('#searchInput').value.trim());
+      for(const id of ['genreFilter','yearFilter','countryFilter','ratingFilter','sortBy']) $(`#${id}`).disabled=searching;
+      $('#filterHint').hidden=!searching;
+      $('#filterHint').textContent=t('filterHint');
+      $('#clearSearchBtn').hidden=!searching;
+      const defaultFilters=!$('#genreFilter').value&&!$('#yearFilter').value&&!$('#countryFilter').value&&!$('#ratingFilter').value&&$('#sortBy').value==='popularity.desc'&&state.quickFilter==='trending';
+      $('#resetFiltersBtn').disabled=!searching&&defaultFilters;
+      $$('[data-filter]').forEach(button=>{
+        const active=button.dataset.filter===state.quickFilter;
+        button.setAttribute('aria-pressed',String(active));
+        for(const cls of ['bg-emerald-500/20','text-emerald-400','border','border-emerald-500/40']) button.classList.toggle(cls,active);
+      });
+      renderActiveFilters();
+    }
+    function renderSkeleton() {
+      const grid = $('#mediaGrid');
+      grid.setAttribute('aria-busy','true');
+      grid.replaceChildren();
+      for (let i=0;i<10;i++) {
+        const card = make('div','glass-card rounded-2xl overflow-hidden animate-pulse');
+        card.append(make('div','aspect-[2/3] skeleton'), make('div','p-3 space-y-2'));
+        grid.append(card);
+      }
+    }
+    async function loadMedia(append=false) {
+      if (state.loading && append) return;
+      state.listController?.abort();
+      const controller = new AbortController();
+      state.listController = controller;
+      const token = ++state.listToken;
+      const page = state.page;
+      const search = $('#searchInput').value.trim();
+      const params = new URLSearchParams({ page:String(page), language:apiLocale() });
+      $('#discoverShelves').hidden=Boolean(search); renderContinue();
+      syncFilterControls();
+      let path;
+      if (search) {
+        params.set('query',search);
+        path = `/search/${state.type}?${params}`;
+        $('#sectionTitle').textContent = t('searchResults',search);
+      } else {
+        const quickTitles={action:'actionWorks',anime:'animationWorks',korean:'koreanWorks',scifi:'scifiWorks'};
+        const defaultTitle=state.type==='movie'?t('moviesPopular'):t('seriesPopular');
+        $('#sectionTitle').textContent=quickTitles[state.quickFilter]?t(quickTitles[state.quickFilter]):defaultTitle;
+        let sortBy=$('#sortBy').value;
+        if(sortBy==='release_date.desc') sortBy=state.type==='movie'?'primary_release_date.desc':'first_air_date.desc';
+        params.set('sort_by',sortBy);
+        const genre = $('#genreFilter').value;
+        const year = $('#yearFilter').value;
+        if (genre) params.set('with_genres',genre);
+        if (year) params.set(state.type === 'movie' ? 'primary_release_year' : 'first_air_date_year',year);
+        const country=$('#countryFilter').value, rating=$('#ratingFilter').value;
+        if(country)params.set('with_origin_country',country);
+        if(rating)params.set('vote_average.gte',rating);
+        if(state.quickFilter==='korean') { params.set('with_original_language','ko'); params.set('with_origin_country','KR'); }
+        path = `/discover/${state.type}?${params}`;
+      }
+      if (!append) { state.items=[]; renderSkeleton(); }
+      state.loading = true;
+      $('#loadMoreBtn').disabled = true;
+      try {
+        const data = await api(path,controller.signal);
+        if (token !== state.listToken || !Array.isArray(data.results)) return;
+        state.totalPages = Math.max(1,Math.min(Number(data.total_pages)||1,500));
+        state.items = append ? state.items.concat(data.results) : data.results;
+        renderGrid();
+        renderPagination();
+        $('#pageStats').textContent = t('pageStats',state.page,state.totalPages);
+        $('#loadMoreBtn').hidden = state.page >= state.totalPages;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        if (token !== state.listToken) return;
+        if (append) {
+          state.page = Math.max(1, page - 1);
+          $('#pageStats').textContent = t('pageStats',state.page,state.totalPages);
+          renderPagination();
+          showToast(t('nextPageError'),'fa-triangle-exclamation','text-amber-400');
+          return;
         }
-
-        async function fetchHeroMedia() {
-            try {
-                const res = await fetch(`${BASE_URL}/trending/${currentType}/day?api_key=${API_KEY}&language=ar-SA`);
-                const data = await res.json();
-                if (data.results && data.results.length > 0) {
-                    const hero = data.results[0];
-                    const backdrop = hero.backdrop_path ? `${BACKDROP_BASE}${hero.backdrop_path}` : '';
-                    const title = hero.title || hero.name;
-
-                    const heroSec = document.getElementById('heroSection');
-                    if(backdrop) heroSec.style.backgroundImage = `url('${backdrop}')`;
-
-                    document.getElementById('heroTitle').innerText = title;
-                    document.getElementById('heroOverview').innerText = hero.overview || 'استمتع بمشاهدة أفضل العروض العالمية مجاناً وبأعلى جودة.';
-                    
-                    const heroItemJson = JSON.stringify({
-                        id: hero.id,
-                        title: title,
-                        poster_path: hero.poster_path,
-                        type: currentType
-                    }).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-
-                    document.getElementById('heroActionBtns').innerHTML = `
-                        <button onclick="openDetailsModal(${hero.id}, '${currentType}')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg transition active:scale-95 text-xs md:text-sm flex items-center gap-2 glow-emerald">
-                            <i class="fa-solid fa-play"></i> مشاهدة الآن
-                        </button>
-                        <button onclick='toggleWatchlist(${heroItemJson})' class="glass-card hover:bg-white/10 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 border border-white/10">
-                            <i class="fa-solid fa-bookmark text-brand-gold"></i> المفضلة
-                        </button>
-                    `;
-                }
-            } catch (e) { console.error(e); }
+        const grid = $('#mediaGrid');
+        grid.setAttribute('aria-busy','false');
+        const errorState=make('div','col-span-full glass-card rounded-2xl text-center px-4 py-10');
+        errorState.append(make('h3','font-bold text-red-200',t('errorTitle')),make('p','text-gray-400 text-xs mt-2 mb-5',t('networkRetry')));
+        addButton(errorState,t('retry'),'bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold',()=>loadMedia(),'fa-rotate-right');
+        grid.replaceChildren(errorState);
+        $('#paginationNav').replaceChildren(); $('#pageStats').textContent='';
+        $('#loadMoreBtn').hidden = true;
+        console.error(error);
+      } finally {
+        if (token === state.listToken) {
+          state.loading = false;
+          $('#loadMoreBtn').disabled = false;
         }
-
-        function switchMediaType(type) {
-            currentType = type;
-            currentPage = 1;
-            document.getElementById('navMovieBtn').className = type === 'movie' ? "px-3 py-1.5 rounded-xl text-white bg-emerald-600 transition shadow" : "px-3 py-1.5 rounded-xl text-gray-400 hover:text-white transition";
-            document.getElementById('navTvBtn').className = type === 'tv' ? "px-3 py-1.5 rounded-xl text-white bg-emerald-600 transition shadow" : "px-3 py-1.5 rounded-xl text-gray-400 hover:text-white transition";
-            populateGenreDropdown();
-            fetchHeroMedia();
-            fetchMedia();
+      }
+    }
+    function renderGrid() {
+      const grid = $('#mediaGrid');
+      grid.replaceChildren();
+      grid.setAttribute('aria-busy','false');
+      if (!state.items.length) {
+        const searching=Boolean($('#searchInput').value.trim());
+        const filtered=Boolean($('#genreFilter').value||$('#yearFilter').value||$('#countryFilter').value||$('#ratingFilter').value||$('#sortBy').value!=='popularity.desc'||state.quickFilter!=='trending');
+        const empty=make('div','col-span-full glass-card rounded-2xl text-center px-4 py-10');
+        empty.append(make('h3','font-bold text-white',searching?t('emptySearchTitle'):filtered?t('emptyFilteredTitle'):t('emptyGenericTitle')),make('p','text-gray-400 text-xs mt-2 mb-5',searching?t('emptySearchText'):t('emptyFilteredText')));
+        if(searching) addButton(empty,t('clearSearchAction'),'bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold',clearSearch,'fa-xmark');
+        else if(filtered) addButton(empty,t('resetFiltersAction'),'bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold',resetFilters,'fa-rotate-left');
+        else addButton(empty,t('reload'),'bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold',()=>loadMedia(),'fa-rotate-right');
+        grid.append(empty); return;
+      }
+      const fragment = document.createDocumentFragment();
+      for (const item of state.items) {
+        const id = Number(item.id);
+        if (!Number.isInteger(id)) continue;
+        const title = mediaTitle(item);
+        const card = make('article','media-card glass-card rounded-2xl overflow-hidden flex flex-col');
+        const posterButton = make('button','poster-action relative aspect-[2/3] overflow-hidden w-full text-right');
+        posterButton.type='button'; posterButton.setAttribute('aria-label',`${t('showDetails')}: ${title}`);
+        const path = imageUrl(item.poster_path);
+        if (path) { const img=make('img','poster w-full h-full object-cover transition duration-500'); img.src=path; img.alt=title; img.loading='lazy'; img.decoding='async'; img.addEventListener('error',()=>{img.replaceWith(make('div','poster w-full h-full grid place-items-center bg-white/5 text-gray-500',t('imageError')));},{once:true}); posterButton.append(img); }
+        else posterButton.append(make('div','poster w-full h-full grid place-items-center bg-white/5 text-gray-500 transition',t('notAvailable')));
+        const score = make('span','absolute top-2 right-2 bg-black/75 text-amber-400 px-2 py-0.5 rounded-lg text-[11px] font-bold',`★ ${Number(item.vote_average) ? Number(item.vote_average).toFixed(1) : '—'}`);
+        posterButton.append(score);
+        const saved = state.watchlist.some(w => w.id === id && w.type === state.type);
+        const saveButton = make('button','absolute top-2 left-2 bg-black/75 text-white w-9 h-9 rounded-full grid place-items-center');
+        saveButton.type='button'; saveButton.setAttribute('aria-label',saved?t('removeTitle'):t('addFavorite'));
+        saveButton.append(icon('fa-bookmark',saved?'text-amber-400':''));
+        saveButton.addEventListener('click',event => { event.stopPropagation(); toggleWatchlist({id,title,poster_path:item.poster_path||'',type:state.type}); });
+        posterButton.append(saveButton);
+        posterButton.addEventListener('click',() => openDetails(id,state.type));
+        const info=make('div','p-3');
+        const titleButton=make('button','font-bold text-white text-xs md:text-sm truncate block max-w-full text-right',title);
+        titleButton.type='button'; titleButton.addEventListener('click',() => openDetails(id,state.type));
+        const meta=make('div','flex items-center justify-between text-[11px] text-gray-400 mt-1');
+        meta.append(make('span','',yearOf(item)),make('span','text-emerald-400 font-semibold',state.type==='movie'?t('movie'):t('seriesType')));
+        info.append(titleButton,meta); card.append(posterButton,info); fragment.append(card);
+      }
+      grid.append(fragment);
+    }
+    function renderPagination() {
+      const nav=$('#paginationNav'); nav.replaceChildren();
+      const pageButton=(page,label,active=false)=>{
+        const button=make('button',active?'bg-emerald-700 text-white px-3 py-1.5 rounded-xl font-bold':'glass-card text-gray-300 px-3 py-1.5 rounded-xl',label);
+        button.type='button'; if (active) button.setAttribute('aria-current','page');
+        button.addEventListener('click',()=>{ if(state.loading)return; state.page=page; loadMedia(); window.scrollTo({top:350,behavior:'smooth'}); });
+        nav.append(button);
+      };
+      if (state.page>1) pageButton(state.page-1,t('previous'));
+      for (let page=Math.max(1,state.page-2);page<=Math.min(state.totalPages,state.page+2);page++) pageButton(page,String(page),page===state.page);
+      if (state.page<state.totalPages) pageButton(state.page+1,t('next'));
+    }
+    function renderShelf(id,items) {
+      const track=$(`#${id}`); track.replaceChildren(); track.setAttribute('aria-busy','false');
+      if(!items.length) { track.append(make('p','text-xs text-gray-500 py-3',t('shelfError'))); return; }
+      for(const item of items.slice(0,12)) {
+        const title=mediaTitle(item), card=make('article','shelf-card glass-card rounded-2xl overflow-hidden shrink-0');
+        const open=make('button','block w-full text-right'); open.type='button'; open.setAttribute('aria-label',`${t('showDetails')}: ${title}`);
+        const image=imageUrl(item.poster_path);
+        if(image) {
+          const img=make('img','w-full aspect-[2/3] object-cover bg-white/5'); img.src=image; img.alt=title; img.loading='lazy'; img.decoding='async';
+          img.addEventListener('error',()=>img.replaceWith(make('div','w-full aspect-[2/3] grid place-items-center bg-white/5 text-gray-500 text-[10px]',t('notAvailable'))),{once:true}); open.append(img);
+        } else open.append(make('div','w-full aspect-[2/3] grid place-items-center bg-white/5 text-gray-500 text-[10px]',t('notAvailable')));
+        const info=make('div','p-2'); info.append(make('strong','block truncate text-xs text-white',title),make('small','block mt-1 text-[10px] text-amber-300',`★ ${Number(item.vote_average)?Number(item.vote_average).toFixed(1):'—'} · ${yearOf(item)}`)); open.append(info);
+        open.addEventListener('click',()=>openDetails(Number(item.id),state.type)); card.append(open); track.append(card);
+      }
+    }
+    async function loadShelves() {
+      state.shelfControllers.forEach(controller=>controller.abort()); state.shelfControllers=[];
+      const token=++state.shelfToken, type=state.type;
+      const shelves=[['shelfPopular','popularity.desc',''],['shelfLatest',type==='movie'?'primary_release_date.desc':'first_air_date.desc',''],['shelfTopRated','vote_average.desc','&vote_count.gte=200']];
+      for(const [id] of shelves) {
+        const track=$(`#${id}`); track.setAttribute('aria-busy','true'); track.replaceChildren();
+        for(let i=0;i<5;i++)track.append(make('div','shelf-card rounded-2xl aspect-[2/3] skeleton shrink-0'));
+      }
+      await Promise.all(shelves.map(async([id,sort,extra])=>{
+        const controller=new AbortController(); state.shelfControllers.push(controller);
+        try {
+          const data=await api(`/discover/${type}?page=1&language=${apiLocale()}&sort_by=${sort}${extra}`,controller.signal);
+          if(token===state.shelfToken)renderShelf(id,Array.isArray(data.results)?data.results:[]);
+        } catch(error) { if(error.name!=='AbortError'&&token===state.shelfToken)renderShelf(id,[]); }
+      }));
+    }
+    async function loadHero() {
+      state.heroController?.abort();
+      const controller=new AbortController(); state.heroController=controller;
+      const token=++state.heroToken; const type=state.type;
+      try {
+        const data=await api(`/trending/${type}/day?language=${apiLocale()}`,controller.signal);
+        if(token!==state.heroToken || !Array.isArray(data.results) || !data.results.length)return;
+        const item=data.results[0], title=mediaTitle(item), id=Number(item.id);
+        const backdrop=imageUrl(item.backdrop_path,'original');
+        if(backdrop) $('#heroSection').style.backgroundImage=`url("${backdrop}")`;
+        else $('#heroSection').style.backgroundImage='';
+        $('#heroTitle').textContent=title;
+        const meta=$('#heroMeta');
+        const fact=(name,value,extra='')=>{const chip=make('span',`hero-meta-item ${extra}`);chip.append(icon(name),document.createTextNode(value));return chip;};
+        meta.replaceChildren(
+          fact('fa-star',Number(item.vote_average)?Number(item.vote_average).toFixed(1):'—','hero-meta-rating'),
+          fact(type==='movie'?'fa-film':'fa-tv',type==='movie'?t('movie'):t('seriesType')),
+          fact('fa-calendar-days',yearOf(item))
+        );
+        meta.hidden=false;
+        $('#heroOverview').textContent=String(item.overview||t('heroFallback')).slice(0,1200);
+        const actions=$('#heroActionBtns'); actions.replaceChildren();
+        addButton(actions,t('watchNow'),'bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs',()=>openDetails(id,type),'fa-play');
+        const saved=state.watchlist.some(w=>w.id===id&&w.type===type);
+        addButton(actions,saved?t('saved'):t('save'),'glass-card text-white font-bold px-4 py-2.5 rounded-xl text-xs',()=>toggleWatchlist({id,title,poster_path:item.poster_path||'',type}),'fa-bookmark');
+      } catch(error) { if(error.name!=='AbortError') console.error(error); }
+    }
+    function openModal(id) {
+      const modal=$(`#${id}`); if(!modal)return;
+      if(!visibleDialogs().length) state.lastFocused=document.activeElement;
+      modal.classList.remove('hidden'); modal.classList.add('flex'); modal.setAttribute('aria-hidden','false');
+      document.body.classList.add('modal-open');
+      requestAnimationFrame(()=>$('.modal-panel,[role="dialog"]',modal)?.focus());
+    }
+    function closeModal(id) {
+      const modal=$(`#${id}`); if(!modal)return;
+      modal.classList.add('hidden'); modal.classList.remove('flex'); modal.setAttribute('aria-hidden','true');
+      if(id==='playerModal') $('#videoIframe').src='';
+      if(id==='detailsModal') state.detailsController?.abort();
+      if(id==='rouletteModal') { clearTimeout(state.rouletteTimer); $('#spinBtn').disabled=false; }
+      if(!visibleDialogs().length) { document.body.classList.remove('modal-open'); if(state.lastFocused?.isConnected) state.lastFocused.focus(); }
+    }
+    function imageElement(path, alt, className, size='w500') {
+      const src=imageUrl(path,size);
+      if(!src)return make('div',`${className} grid place-items-center bg-white/5 text-gray-500`,t('notAvailable'));
+      const img=make('img',className); img.src=src; img.alt=alt; img.loading='lazy'; img.decoding='async';
+      img.addEventListener('error',()=>{ img.replaceWith(make('div',`${className} grid place-items-center bg-white/5 text-gray-500`,t('imageError'))); },{once:true});
+      return img;
+    }
+    async function openDetails(id,type=state.type) {
+      if(!Number.isInteger(Number(id)) || !['movie','tv'].includes(type))return;
+      state.detailsController?.abort();
+      const controller=new AbortController(); state.detailsController=controller;
+      const token=++state.detailsToken;
+      const content=$('#detailsContent'); content.replaceChildren(make('p','text-center py-12 text-gray-400',t('loadingDetails')));
+      openModal('detailsModal');
+      try {
+        const item=await api(`/${type}/${Number(id)}?language=${apiLocale()}&append_to_response=credits,videos`,controller.signal);
+        if(token!==state.detailsToken)return;
+        const title=mediaTitle(item), poster=imageElement(item.poster_path,title,'w-44 md:w-56 rounded-2xl object-cover shadow-2xl border border-white/10 mx-auto md:mx-0');
+        saveHistory({id:Number(id),type,title,poster_path:item.poster_path||''});
+        const layout=make('div','details-layout flex flex-col md:flex-row gap-6 items-stretch');
+        poster.classList.add('details-poster');
+        const copy=make('div','details-copy flex-grow space-y-4 text-center md:text-right w-full');
+        copy.append(make('h2','text-2xl md:text-3xl font-black',title));
+        const meta=make('div','flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-gray-300');
+        meta.append(make('span','bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg',`⭐ ${Number(item.vote_average)?Number(item.vote_average).toFixed(1):'—'}`));
+        meta.append(make('span','bg-white/5 px-3 py-1 rounded-lg',`📅 ${yearOf(item)}`));
+        if(type==='tv')meta.append(make('span','bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg font-bold',`📺 ${Number(item.number_of_seasons)||1} ${t('seasons')}`));
+        copy.append(meta,make('p','text-gray-300 text-xs sm:text-sm leading-relaxed',String(item.overview||t('noDescription')).slice(0,3000)));
+        const cast=(item.credits?.cast||[]).slice(0,3);
+        if(cast.length) {
+          copy.append(make('h3','text-xs text-gray-400',t('cast')));
+          const castRow=make('div','flex flex-wrap justify-center md:justify-start gap-2');
+          for(const person of cast) {
+            const chip=make('div','flex items-center gap-2 bg-white/5 p-1.5 rounded-lg border border-white/5');
+            chip.append(imageElement(person.profile_path,String(person.name||''),'w-8 h-8 rounded-full object-cover','w185'),make('span','text-[10px] text-gray-300',String(person.name||'').slice(0,160)));
+            castRow.append(chip);
+          }
+          copy.append(castRow);
         }
-
-        function populateGenreDropdown() {
-            const select = document.getElementById('genreFilter');
-            select.innerHTML = `<option value="">كل التصنيفات</option>`;
-            genresList[currentType].forEach(g => { select.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
+        const actions=make('div','flex flex-wrap gap-3 pt-2 justify-center md:justify-start');
+        addButton(actions,t('watchNow'),'bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm',()=>openPlayer(id,title,Number(item.number_of_seasons)||1,1,1,type),'fa-play');
+        const trailer=item.videos?.results?.find(video=>video.type==='Trailer'&&video.site==='YouTube'&&/^[\w-]{6,}$/.test(video.key||''));
+        if(trailer) { const link=make('a','glass-card text-white px-4 py-2.5 rounded-xl text-xs',`▶ ${t('trailer')}`); link.href=`https://www.youtube.com/watch?v=${encodeURIComponent(trailer.key)}`; link.target='_blank'; link.rel='noopener noreferrer'; actions.append(link); }
+        addButton(actions,t('share'),'glass-card text-white px-3 py-2.5 rounded-xl text-xs',()=>shareMedia(title),'fa-share-nodes');
+        const saved=state.watchlist.some(w=>w.id===Number(id)&&w.type===type);
+        const saveButton=addButton(actions,saved?t('saved'):t('save'),'glass-card text-white px-4 py-2.5 rounded-xl text-xs',()=>toggleWatchlist({id:Number(id),title,poster_path:item.poster_path||'',type}),'fa-bookmark');
+        saveButton.id='detailWatchButton';
+        layout.append(poster,copy); copy.append(actions); content.replaceChildren(layout);
+      } catch(error) {
+        if(error.name==='AbortError')return;
+        if(token===state.detailsToken) {
+          content.replaceChildren();
+          const errorState=make('div','text-center py-8');
+          errorState.append(make('p','text-red-300 text-xs mb-4',t('detailsError')));
+          addButton(errorState,t('retry'),'bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold',()=>openDetails(id,type),'fa-rotate-right');
+          content.append(errorState);
         }
-
-        function quickFilter(type) {
-            if (type === 'action') document.getElementById('genreFilter').value = currentType === 'movie' ? 28 : 10759;
-            else if (type === 'scifi') document.getElementById('genreFilter').value = currentType === 'movie' ? 878 : 10765;
-            else if (type === 'anime') document.getElementById('genreFilter').value = 16;
-            else if (type === 'korean') document.getElementById('searchInput').value = 'كوريا';
-            else if (type === 'trending') { document.getElementById('genreFilter').value = ''; document.getElementById('searchInput').value = ''; }
-            currentPage = 1;
-            fetchMedia();
+        console.error(error);
+      }
+    }
+    async function shareMedia(title) {
+      const data={title,text:`${t('watchNow')}: ${title} · EfrînFlix Pro`,url:location.href};
+      try {
+        if(navigator.share) await navigator.share(data);
+        else { await navigator.clipboard.writeText(location.href); showToast(t('shareCopied'),'fa-copy','text-amber-400'); }
+      } catch(error) { if(error.name!=='AbortError')showToast(t('shareError'),'fa-triangle-exclamation','text-amber-400'); }
+    }
+    function readContinue() {
+      try {
+        const item=JSON.parse(localStorage.getItem('efrinflix_last_watched')||'null');
+        if(!item||!Number.isInteger(Number(item.id))||!['movie','tv'].includes(item.type)||!item.title)return null;
+        return {id:Number(item.id),type:item.type,title:String(item.title).slice(0,300),season:Math.max(1,Number(item.season)||1),episode:Math.max(1,Number(item.episode)||1)};
+      } catch { return null; }
+    }
+    function saveContinue(item) {
+      save('efrinflix_last_watched',{id:item.id,title:item.title,type:item.type,season:item.season,episode:item.episode,time:Date.now()});
+      renderContinue();
+    }
+    function renderContinue() {
+      const item=readContinue(), section=$('#continueWatchingSection');
+      section.hidden=!item||Boolean($('#searchInput').value.trim());
+      if(!item)return;
+      $('#continueTitle').textContent=item.title+(item.type==='tv'?` (${t('season',item.season)} - ${t('episode',item.episode)})`:'');
+    }
+    function saveHistory(item) {
+      state.history=state.history.filter(saved=>saved.id!==item.id||saved.type!==item.type);
+      state.history.unshift({id:item.id,type:item.type,title:String(item.title||'Untitled').slice(0,300),poster_path:validImagePath(item.poster_path)?item.poster_path:'',viewedAt:Date.now()});
+      state.history=state.history.slice(0,100); save('efrinflix_history_v1',state.history);
+      if(state.personalTab==='history')renderHistory();
+    }
+    function openPlayer(id,title,seasons=1,season=1,episode=1,type=state.type) {
+      closeModal('detailsModal');
+      state.playing={id:Number(id),type,season:Number(season)||1,episode:Number(episode)||1,title:String(title).slice(0,300)};
+      $('#playerTitle').textContent=state.playing.title;
+      saveContinue(state.playing);
+      const selectors=$('#tvSelectors'), select=$('#seasonSelect');
+      if(type==='tv') {
+        selectors.hidden=false; select.replaceChildren();
+        for(let i=1;i<=Math.min(100,Math.max(Number(seasons)||1,state.playing.season));i++)select.add(new Option(t('season',i),String(i)));
+        select.value=String(state.playing.season);
+        openModal('playerModal'); updateEpisodeSelector(state.playing.episode);
+      } else { selectors.hidden=true; openModal('playerModal'); switchServer(state.server); }
+    }
+    async function updateEpisodeSelector(selectedEpisode=1) {
+      if(!state.playing||state.playing.type!=='tv')return;
+      state.seasonController?.abort();
+      const controller=new AbortController(); state.seasonController=controller;
+      const token=++state.seasonToken, season=Number($('#seasonSelect').value)||1;
+      state.playing.season=season;
+      const select=$('#episodeSelect'); select.replaceChildren(new Option(t('loading'),''));
+      try {
+        const data=await api(`/tv/${state.playing.id}/season/${season}?language=${apiLocale()}`,controller.signal);
+        if(token!==state.seasonToken)return;
+        const episodes=Array.isArray(data.episodes)?data.episodes:[]; select.replaceChildren();
+        if(episodes.length) for(const ep of episodes) select.add(new Option(t('episodeName',Number(ep.episode_number)||'',String(ep.name||'').slice(0,120)),String(ep.episode_number)));
+        else for(let i=1;i<=24;i++)select.add(new Option(t('episode',i),String(i)));
+      } catch(error) {
+        if(error.name==='AbortError')return;
+        if(token!==state.seasonToken)return;
+        select.replaceChildren(); for(let i=1;i<=24;i++)select.add(new Option(t('episode',i),String(i)));
+      }
+      select.value=String(selectedEpisode);
+      if(!select.value)select.selectedIndex=0;
+      state.playing.episode=Number(select.value)||1;
+      saveContinue(state.playing); switchServer(state.server);
+    }
+    function switchServer(number) {
+      if(!state.playing)return;
+      const server=Number(number);
+      if(!Number.isInteger(server)||server<1||server>5)return;
+      state.server=server;
+      const {id,type,season,episode}=state.playing;
+      const urls=type==='movie' ? [
+        `https://vidlink.pro/movie/${id}?primaryColor=10b981`,
+        `https://vidsrc.pm/embed/movie/${id}`,
+        `https://www.2embed.cc/embed/${id}`,
+        `https://player.videasy.net/movie/${id}`,
+        `https://autoembed.co/movie/tmdb/${id}`
+      ] : [
+        `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=10b981`,
+        `https://vidsrc.pm/embed/tv/${id}/${season}/${episode}`,
+        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
+        `https://player.videasy.net/tv/${id}/${season}/${episode}`,
+        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`
+      ];
+      const url=urls[server-1];
+      for(const button of $$('[data-server]')) {
+        const active=Number(button.dataset.server)===server;
+        button.className=active?'px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-700':'px-2.5 py-1 rounded-lg text-gray-300 hover:text-white';
+        button.setAttribute('aria-pressed',String(active));
+      }
+      $('#playerLoading').hidden=false;
+      $('#externalPlayerBtn').href=url;
+      $('#videoIframe').src=url;
+      clearTimeout(state.playerTimer);
+      state.playerTimer=setTimeout(()=>$('#playerLoading').hidden=true,12000);
+    }
+    function changeEpisode() {
+      if(!state.playing)return;
+      state.playing.episode=Number($('#episodeSelect').value)||1;
+      saveContinue(state.playing); switchServer(state.server);
+    }
+    function closePlayer() { clearTimeout(state.playerTimer); closeModal('playerModal'); }
+    function toggleWatchlist(item) {
+      const id=Number(item?.id), type=item?.type;
+      if(!Number.isInteger(id)||!['movie','tv'].includes(type))return;
+      const index=state.watchlist.findIndex(saved=>saved.id===id&&saved.type===type);
+      if(index>=0) { state.watchlist.splice(index,1); showToast(t('removeFavorite'),'fa-bookmark','text-red-400'); }
+      else if(state.watchlist.length<500) {
+        const collection=state.activeCollection==='all'?'favorites':state.activeCollection;
+        state.watchlist.push({id,type,title:String(item.title||item.name||'Untitled').slice(0,300),poster_path:validImagePath(item.poster_path)?item.poster_path:'',collection});
+        showToast(t('addToList',collectionName(collection)),'fa-bookmark','text-amber-400');
+      } else { showToast(t('listLimit'),'fa-triangle-exclamation','text-amber-400'); return; }
+      save('efrinflix_watchlist_v2',state.watchlist); renderWatchlist(); renderGrid();
+      const button=$('#detailWatchButton');
+      if(button) button.lastChild.textContent=state.watchlist.some(saved=>saved.id===id&&saved.type===type)?` ${t('saved')}`:` ${t('save')}`;
+      loadHero();
+    }
+    function renderWatchlist() {
+      $('#watchlistCount').textContent=String(state.watchlist.length);
+      renderCollections();
+      const container=$('#watchlistContainer'); container.replaceChildren();
+      const items=state.activeCollection==='all'?state.watchlist:state.watchlist.filter(item=>item.collection===state.activeCollection);
+      if(!items.length) { container.append(make('p','text-center text-gray-400 text-xs py-8',t('emptyList'))); return; }
+      for(const item of items) {
+        const row=make('div','flex flex-wrap items-center justify-between gap-2 glass-card p-2 rounded-xl');
+        const open=make('button','flex items-center gap-3 min-w-0 flex-1 text-right'); open.type='button';
+        open.append(imageElement(item.poster_path,item.title,'w-10 h-14 object-cover rounded-lg','w185'));
+        const text=make('span','min-w-0'); text.append(make('strong','block text-xs truncate max-w-[190px]',item.title),make('small','text-[10px] text-emerald-400',item.type==='movie'?t('movie'):t('seriesType')));
+        open.append(text); open.addEventListener('click',()=>openDetails(item.id,item.type));
+        const collectionSelect=make('select','glass-card bg-brand-dark px-2 py-1.5 rounded-lg text-[10px]'); collectionSelect.setAttribute('aria-label',t('chooseList'));
+        for(const collection of state.collections)collectionSelect.add(new Option(collectionName(collection),collection)); collectionSelect.value=item.collection;
+        collectionSelect.addEventListener('change',()=>{item.collection=collectionSelect.value;save('efrinflix_watchlist_v2',state.watchlist);renderWatchlist();showToast(t('listMoved',collectionName(item.collection)),'fa-folder','text-emerald-400');});
+        const remove=make('button','text-red-400 hover:text-red-300 p-2 text-xs'); remove.type='button'; remove.setAttribute('aria-label',`${t('removeTitle')}: ${item.title}`); remove.append(icon('fa-trash'));
+        remove.addEventListener('click',()=>toggleWatchlist(item)); row.append(open,collectionSelect,remove); container.append(row);
+      }
+    }
+    function renderHistory() {
+      const container=$('#historyContainer'); container.replaceChildren();
+      if(!state.history.length) { container.append(make('p','text-center text-gray-400 text-xs py-8',t('emptyHistory'))); return; }
+      for(const item of state.history) {
+        const row=make('div','flex items-center justify-between gap-2 glass-card p-2 rounded-xl');
+        const open=make('button','flex items-center gap-3 min-w-0 flex-1 text-right'); open.type='button';
+        open.append(imageElement(item.poster_path,item.title,'w-10 h-14 object-cover rounded-lg','w185'));
+        const info=make('span','min-w-0'); info.append(make('strong','block text-xs truncate',item.title),make('small','block text-[10px] text-gray-400',new Date(item.viewedAt).toLocaleDateString(state.language==='ar'?'ar':state.language==='ku'?'ku':'en')));
+        open.append(info); open.addEventListener('click',()=>openDetails(item.id,item.type));
+        const remove=make('button','text-red-400 p-2'); remove.type='button'; remove.setAttribute('aria-label',`${t('removeTitle')}: ${item.title}`); remove.append(icon('fa-trash'));
+        remove.addEventListener('click',()=>{state.history=state.history.filter(saved=>saved.id!==item.id||saved.type!==item.type);save('efrinflix_history_v1',state.history);renderHistory();});
+        row.append(open,remove); container.append(row);
+      }
+    }
+    function selectPersonalTab(tab) {
+      state.personalTab=tab;
+      for(const button of $$('[data-personal-tab]')) {
+        const active=button.dataset.personalTab===tab; button.setAttribute('aria-selected',String(active));
+        button.className=active?'bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold':'glass-card px-3 py-2 rounded-xl text-xs';
+      }
+      $('#personalWatchlistPanel').hidden=tab!=='watchlist'; $('#personalHistoryPanel').hidden=tab!=='history'; $('#personalSettingsPanel').hidden=tab!=='settings';
+      if(tab==='watchlist')renderWatchlist(); if(tab==='history')renderHistory();
+    }
+    function openPersonal(tab='watchlist') { selectPersonalTab(tab); openModal('watchlistModal'); }
+    function createCollection(event) {
+      event.preventDefault();
+      const input=$('#newCollectionName'), name=input.value.trim();
+      if(!name) { showToast(t('collectionNameRequired'),'fa-triangle-exclamation','text-amber-400'); input.focus(); return; }
+      if(state.collections.length>=30) { showToast(t('collectionLimit'),'fa-triangle-exclamation','text-amber-400'); return; }
+      if(state.collections.some(item=>item.toLocaleLowerCase()===name.toLocaleLowerCase())) { showToast(t('collectionExists'),'fa-triangle-exclamation','text-amber-400'); return; }
+      state.collections.push(name); save('efrinflix_collections_v1',state.collections.filter(item=>!['favorites','watch-later'].includes(item)));
+      state.activeCollection=name; input.value=''; renderWatchlist(); showToast(t('listCreated'),'fa-folder-plus','text-emerald-400');
+    }
+    function deleteCollection() {
+      const name=state.activeCollection;
+      if(['all','favorites','watch-later'].includes(name))return;
+      if(!window.confirm(t('deleteListConfirm',name)))return;
+      state.watchlist.forEach(item=>{if(item.collection===name)item.collection='favorites';});
+      state.collections=state.collections.filter(item=>item!==name); state.activeCollection='all';
+      save('efrinflix_collections_v1',state.collections.filter(item=>!['favorites','watch-later'].includes(item)));
+      save('efrinflix_watchlist_v2',state.watchlist); renderWatchlist(); showToast(t('listDeleted'),'fa-folder-minus','text-amber-400');
+    }
+    function clearHistory() {
+      if(!state.history.length||!window.confirm(t('clearHistoryConfirm')))return;
+      state.history=[]; save('efrinflix_history_v1',state.history); renderHistory(); showToast(t('historyCleared'),'fa-trash','text-amber-400');
+    }
+    function exportData() {
+      const backup={app:'EfrinFlix',version:1,exportedAt:new Date().toISOString(),language:state.language,collections:state.collections.filter(item=>!['favorites','watch-later'].includes(item)),watchlist:state.watchlist,history:state.history};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
+      const link=make('a'); link.href=url; link.download='efrinflix-backup.json'; document.body.append(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); showToast(t('backupExported'),'fa-file-arrow-down','text-emerald-400');
+    }
+    async function importData(event) {
+      const file=event.target.files?.[0]; if(!file)return;
+      try {
+        if(file.size>1024*1024)throw new Error('large');
+        const backup=JSON.parse(await file.text());
+        if(!backup||backup.app!=='EfrinFlix'||backup.version!==1||!Array.isArray(backup.watchlist)||!Array.isArray(backup.collections)||!Array.isArray(backup.history))throw new Error('invalid');
+        for(const name of backup.collections)if(typeof name==='string'&&name.trim()&&name.length<=32&&!state.collections.includes(name)&&state.collections.length<30)state.collections.push(name);
+        for(const item of backup.watchlist.slice(0,500)) {
+          if(!item||!Number.isInteger(Number(item.id))||!['movie','tv'].includes(item.type))continue;
+          if(!state.watchlist.some(saved=>saved.id===Number(item.id)&&saved.type===item.type))state.watchlist.push({id:Number(item.id),type:item.type,title:String(item.title||'Untitled').slice(0,300),poster_path:validImagePath(item.poster_path)?item.poster_path:'',collection:state.collections.includes(item.collection)?item.collection:'favorites'});
         }
-
-        function renderSkeletonLoader() {
-            const grid = document.getElementById('mediaGrid');
-            grid.innerHTML = '';
-            for (let i = 0; i < 10; i++) {
-                grid.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden animate-pulse border border-white/5">
-                        <div class="aspect-[2/3] bg-white/5"></div>
-                        <div class="p-3 space-y-2">
-                            <div class="h-3 bg-white/10 rounded w-3/4"></div>
-                            <div class="h-2 bg-white/5 rounded w-1/2"></div>
-                        </div>
-                    </div>`;
-            }
+        for(const item of backup.history.slice(0,100)) {
+          if(!item||!Number.isInteger(Number(item.id))||!['movie','tv'].includes(item.type))continue;
+          if(!state.history.some(saved=>saved.id===Number(item.id)&&saved.type===item.type))state.history.push({id:Number(item.id),type:item.type,title:String(item.title||'Untitled').slice(0,300),poster_path:validImagePath(item.poster_path)?item.poster_path:'',viewedAt:Number(item.viewedAt)||Date.now()});
         }
-
-        async function fetchMedia(append = false) {
-            const sectionTitle = document.getElementById('sectionTitle');
-            const genre = document.getElementById('genreFilter').value;
-            const year = document.getElementById('yearFilter').value;
-            const sortBy = document.getElementById('sortBy').value;
-            const searchVal = document.getElementById('searchInput').value.trim();
-            const loadBtn = document.getElementById('loadMoreBtn');
-
-            if (!append) renderSkeletonLoader();
-
-            let url = searchVal 
-                ? `${BASE_URL}/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(searchVal)}&page=${currentPage}&language=ar-SA`
-                : `${BASE_URL}/discover/${currentType}?api_key=${API_KEY}&page=${currentPage}&sort_by=${sortBy}&language=ar-SA${genre ? '&with_genres='+genre : ''}${year ? (currentType==='movie'?'&primary_release_year='+year : '&first_air_date_year='+year) : ''}`;
-
-            sectionTitle.innerText = searchVal ? `نتائج البحث: "${searchVal}"` : (currentType === 'movie' ? "الأفلام الشائعة" : "المسلسلات الشائعة");
-
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                
-                totalPages = Math.min(data.total_pages || 1, 500);
-                currentItems = append ? [...currentItems, ...data.results] : data.results;
-                
-                renderGrid(currentItems);
-                renderPaginationControls();
-                
-                if(currentPage < totalPages) loadBtn.classList.remove('hidden');
-                else loadBtn.classList.add('hidden');
-            } catch (e) {
-                document.getElementById('mediaGrid').innerHTML = `<div class="col-span-full text-center text-red-500 py-6">حدث خطأ أثناء جلب البيانات.</div>`;
-            }
+        state.watchlist=state.watchlist.slice(0,500); state.history=state.history.sort((a,b)=>b.viewedAt-a.viewedAt).slice(0,100);
+        save('efrinflix_collections_v1',state.collections.filter(item=>!['favorites','watch-later'].includes(item)));
+        save('efrinflix_watchlist_v2',state.watchlist); save('efrinflix_history_v1',state.history);
+        renderWatchlist(); renderHistory(); showToast(t('backupImported'),'fa-file-circle-check','text-emerald-400');
+      } catch(error) { showToast(error.message==='large'?t('backupLarge'):t('backupInvalid'),'fa-triangle-exclamation','text-amber-400'); }
+      finally { event.target.value=''; }
+    }
+    function openRoulette() { $('#rouletteResult').hidden=true; openModal('rouletteModal'); }
+    async function spinRoulette() {
+      const button=$('#spinBtn'), result=$('#rouletteResult'), wheel=$('#wheelCircle'), type=state.type;
+      button.disabled=true; result.hidden=true; wheel.style.transform=`rotate(${1440+Math.floor(Math.random()*360)}deg)`;
+      try {
+        const page=Math.floor(Math.random()*10)+1;
+        const data=await api(`/discover/${type}?page=${page}&sort_by=popularity.desc&language=${apiLocale()}`);
+        const items=Array.isArray(data.results)?data.results.filter(item=>Number.isInteger(Number(item.id))):[];
+        if(!items.length)throw new Error('No results');
+        const item=items[Math.floor(Math.random()*items.length)];
+        clearTimeout(state.rouletteTimer);
+        state.rouletteTimer=setTimeout(()=>{
+          if($('#rouletteModal').classList.contains('hidden'))return;
+          button.disabled=false; result.replaceChildren();
+          const row=make('div','flex items-center gap-3 text-right');
+          row.append(imageElement(item.poster_path,mediaTitle(item),'w-14 h-20 object-cover rounded-xl shadow'));
+          const copy=make('div','min-w-0'); copy.append(make('small','text-amber-400 font-bold block',t('pickedForYou')),make('strong','block text-xs md:text-sm my-1',mediaTitle(item)));
+        addButton(copy,t('showDetails'),'bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold',()=>{closeModal('rouletteModal');openDetails(Number(item.id),type);},'fa-eye');
+          row.append(copy); result.append(row); result.hidden=false;
+        },4000);
+      } catch(error) { button.disabled=false; showToast(t('rouletteError'),'fa-triangle-exclamation','text-amber-400'); console.error(error); }
+    }
+    function quickFilter(filter) {
+      const genre=$('#genreFilter'), search=$('#searchInput');
+      if(!['trending','action','scifi','anime','korean'].includes(filter))return;
+      if(filter==='korean'&&state.type!=='tv')switchType('tv',false);
+      search.value=''; genre.value=''; $('#yearFilter').value=''; $('#countryFilter').value=''; $('#ratingFilter').value=''; $('#sortBy').value='popularity.desc';
+      if(filter==='action') genre.value=state.type==='movie'?'28':'10759';
+      if(filter==='scifi') genre.value=state.type==='movie'?'878':'10765';
+      if(filter==='anime') genre.value='16';
+      if(filter==='korean')$('#countryFilter').value='KR';
+      state.quickFilter=filter; state.page=1; syncFilterControls(); loadMedia();
+    }
+    function switchType(type, reload=true) {
+      if(!['movie','tv'].includes(type)||type===state.type)return;
+      state.type=type; state.quickFilter='trending'; state.page=1; renderGenres();
+      for(const button of [$('#navMovieBtn'),$('#navTvBtn')]) {
+        const active=button.dataset.type===type;
+        button.className=active?'px-3 py-1.5 rounded-xl text-white bg-emerald-600 transition shadow':'px-3 py-1.5 rounded-xl text-gray-400 hover:text-white transition';
+        button.setAttribute('aria-pressed',String(active));
+      }
+      loadHero(); loadShelves(); if(reload)loadMedia();
+    }
+    function performSearch() { clearTimeout(state.searchTimer); state.page=1; syncFilterControls(); loadMedia(); }
+    function clearSearch() { $('#searchInput').value=''; syncFilterControls(); performSearch(); $('#searchInput').focus(); }
+    function resetFilters() {
+      $('#searchInput').value=''; $('#genreFilter').value=''; $('#yearFilter').value=''; $('#countryFilter').value=''; $('#ratingFilter').value=''; $('#sortBy').value='popularity.desc';
+      state.quickFilter='trending'; state.page=1; syncFilterControls(); loadMedia();
+    }
+    function changeLanguage(language) {
+      if(!['ar','ku','en'].includes(language)||language===state.language)return;
+      state.language=language; save('efrinflix_language_v1',language); applyTranslations();
+      state.page=1; loadHero(); loadShelves(); loadMedia(); renderContinue(); renderWatchlist(); renderHistory();
+    }
+    function bindEvents() {
+      $('#homeButton').addEventListener('click',()=>{ resetFilters(); window.scrollTo({top:0,behavior:'smooth'}); });
+      $('#navMovieBtn').addEventListener('click',()=>switchType('movie'));
+      $('#navTvBtn').addEventListener('click',()=>switchType('tv'));
+      $('#searchButton').addEventListener('click',performSearch);
+      $('#clearSearchBtn').addEventListener('click',clearSearch);
+      $('#resetFiltersBtn').addEventListener('click',resetFilters);
+      $('#searchInput').addEventListener('input',()=>{ syncFilterControls(); clearTimeout(state.searchTimer); state.searchTimer=setTimeout(performSearch,450); });
+      $('#searchInput').addEventListener('keydown',event=>{if(event.key==='Enter')performSearch();});
+      $('#languageSelect').addEventListener('change',event=>changeLanguage(event.target.value));
+      $('#settingsLanguageSelect').addEventListener('change',event=>changeLanguage(event.target.value));
+      for(const id of ['genreFilter','yearFilter','countryFilter','ratingFilter','sortBy']) $(`#${id}`).addEventListener('change',()=>{state.quickFilter='trending';state.page=1;syncFilterControls();loadMedia();});
+      $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>quickFilter(button.dataset.filter)));
+      $$('[data-shelf-target]').forEach(button=>button.addEventListener('click',()=>{
+        const track=$(`#${button.dataset.shelfTarget}`);
+        if(!track)return;
+        const forward=button.dataset.shelfShift==='forward';
+        const direction=getComputedStyle(track).direction;
+        const sign=(forward?1:-1)*(direction==='rtl'?-1:1);
+        track.scrollBy({left:sign*Math.max(track.clientWidth*.82,180),behavior:'smooth'});
+      }));
+      $('#loadMoreBtn').addEventListener('click',()=>{if(!state.loading&&state.page<state.totalPages){state.page++;loadMedia(true);}});
+      $('#watchlistOpenBtn').addEventListener('click',()=>openPersonal());
+      $$('[data-personal-tab]').forEach(button=>button.addEventListener('click',()=>selectPersonalTab(button.dataset.personalTab)));
+      $('#collectionFilter').addEventListener('change',event=>{state.activeCollection=event.target.value;renderWatchlist();});
+      $('#createCollectionForm').addEventListener('submit',createCollection);
+      $('#deleteCollectionBtn').addEventListener('click',deleteCollection);
+      $('#clearHistoryBtn').addEventListener('click',clearHistory);
+      $('#exportDataBtn').addEventListener('click',exportData);
+      $('#importDataBtn').addEventListener('click',()=>$('#importDataInput').click());
+      $('#importDataInput').addEventListener('change',importData);
+      $('#rouletteOpenBtn').addEventListener('click',openRoulette);
+      $('#spinBtn').addEventListener('click',spinRoulette);
+      $('#seasonSelect').addEventListener('change',()=>updateEpisodeSelector(1));
+      $('#episodeSelect').addEventListener('change',changeEpisode);
+      $('#continueBtn').addEventListener('click',()=>{const item=readContinue();if(item)openPlayer(item.id,item.title,item.season,item.season,item.episode,item.type);});
+      $$('[data-server]').forEach(button=>button.addEventListener('click',()=>switchServer(button.dataset.server)));
+      document.addEventListener('click',event=>{
+        const close=event.target.closest('[data-close]'); if(close){closeModal(close.dataset.close);return;}
+        const backdrop=event.target.closest('.fixed[id$="Modal"]'); if(backdrop&&event.target===backdrop)closeModal(backdrop.id);
+      });
+      document.addEventListener('keydown',event=>{
+        if(event.key==='Escape') { const modal=visibleDialogs().at(-1); if(modal)closeModal(modal.closest('section').id); }
+        if(event.key==='Tab') {
+          const modal=visibleDialogs().at(-1); if(!modal)return;
+          const focusable=$$('button:not(:disabled),a[href],select,input,[tabindex="0"]',modal).filter(el=>!el.hidden&&el.getClientRects().length);
+          if(!focusable.length)return;
+          const first=focusable[0], last=focusable.at(-1);
+          if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+          else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
         }
-
-        function renderGrid(items) {
-            const grid = document.getElementById('mediaGrid');
-            grid.innerHTML = '';
-            if (!items || items.length === 0) { grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">لا توجد نتائج مطابقة.</div>`; return; }
-
-            items.forEach(item => {
-                const title = item.title || item.name;
-                const poster = item.poster_path ? `${IMAGE_BASE}${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Cover';
-                const year = (item.release_date || item.first_air_date || 'N/A').split('-')[0];
-                const isSaved = watchlist.some(w => w.id === item.id && w.type === currentType);
-
-                const itemJson = JSON.stringify({
-                    id: item.id,
-                    title: title,
-                    poster_path: item.poster_path,
-                    type: currentType
-                }).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-
-                grid.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between border border-white/5 group" onclick="openDetailsModal(${item.id}, '${currentType}')">
-                        <div class="relative aspect-[2/3] overflow-hidden">
-                            <img src="${poster}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <div class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-amber-400 px-2 py-0.5 rounded-lg text-[11px] font-bold">
-                                <i class="fa-solid fa-star"></i> ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
-                            </div>
-                            <button onclick='event.stopPropagation(); toggleWatchlist(${itemJson})' class="absolute top-2.5 left-2.5 bg-black/60 hover:bg-black/90 text-white w-8 h-8 rounded-full flex items-center justify-center transition">
-                                <i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'} text-xs"></i>
-                            </button>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-bold text-white text-xs md:text-sm truncate">${title}</h3>
-                            <div class="flex items-center justify-between text-[11px] text-gray-400 mt-1"><span>${year}</span><span class="text-emerald-400 font-semibold">${currentType === 'movie' ? 'فيلم' : 'مسلسل'}</span></div>
-                        </div>
-                    </div>`;
-            });
-            document.getElementById('pageStats').innerText = `الصفحة ${currentPage} من ${totalPages}`;
-        }
-
-        function handleSearchInput() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { performSearch(); }, 600); }
-        function performSearch() { currentPage = 1; fetchMedia(); }
-        function applyFilters() { currentPage = 1; fetchMedia(); }
-        function resetToHome() { document.getElementById('searchInput').value = ''; currentPage = 1; fetchMedia(); }
-        function loadNextPage() { if (currentPage < totalPages) { currentPage++; fetchMedia(true); } }
-
-        function renderPaginationControls() {
-            const container = document.getElementById('paginationNav');
-            container.innerHTML = '';
-            const createBtn = (p, text, active = false) => {
-                const b = document.createElement('button');
-                b.className = active ? "bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold" : "glass-card text-gray-300 hover:text-white px-3 py-1.5 rounded-xl";
-                b.innerText = text;
-                b.onclick = () => { currentPage = p; fetchMedia(); window.scrollTo({top: 350, behavior: 'smooth'}); };
-                return b;
-            };
-            if (currentPage > 1) container.appendChild(createBtn(currentPage - 1, "السابق"));
-            let start = Math.max(1, currentPage - 2), end = Math.min(totalPages, currentPage + 2);
-            for (let i = start; i <= end; i++) container.appendChild(createBtn(i, i, i === currentPage));
-            if (currentPage < totalPages) container.appendChild(createBtn(currentPage + 1, "التالي"));
-        }
-
-        async function openDetailsModal(id, mediaType = currentType) {
-            const modal = document.getElementById('detailsModal');
-            const content = document.getElementById('detailsContent');
-            modal.classList.remove('hidden');
-            content.innerHTML = `<div class="text-center py-12"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-400"></i><p class="mt-2 text-xs text-gray-400">جاري التحميل...</p></div>`;
-
-            try {
-                const res = await fetch(`${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}&language=ar-SA&append_to_response=credits,videos`);
-                const item = await res.json();
-
-                const title = item.title || item.name;
-                const poster = item.poster_path ? `${IMAGE_BASE}${item.poster_path}` : 'https://via.placeholder.com/500x750';
-                const year = (item.release_date || item.first_air_date || 'N/A').split('-')[0];
-                const isSaved = watchlist.some(w => w.id === id && w.type === mediaType);
-                const seasonsCount = item.number_of_seasons || 1;
-                
-                const trailer = item.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-                const trailerBtn = trailer ? `<a href="https://www.youtube.com/watch?v=${trailer.key}" target="_blank" class="glass-card hover:bg-white/10 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5"><i class="fa-brands fa-youtube text-red-500 text-lg"></i> إعلان</a>` : '';
-                
-                const castHtml = item.credits?.cast?.slice(0, 3).map(c => `
-                    <div class="flex items-center gap-2 bg-white/5 p-1.5 rounded-lg border border-white/5">
-                        <img src="${c.profile_path ? IMAGE_BASE+c.profile_path : 'https://via.placeholder.com/50'}" class="w-8 h-8 rounded-full object-cover">
-                        <span class="text-[10px] text-gray-300">${c.name}</span>
-                    </div>`).join('') || '';
-
-                const itemObj = {
-                    id: item.id,
-                    title: title,
-                    poster_path: item.poster_path,
-                    type: mediaType
-                };
-
-                const safeTitle = title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const itemJson = JSON.stringify(itemObj).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-
-                content.innerHTML = `
-                    <div class="flex flex-col md:flex-row gap-6 items-start">
-                        <img src="${poster}" class="w-40 md:w-56 rounded-2xl object-cover shadow-2xl border border-white/10 mx-auto md:mx-0">
-                        <div class="flex-grow space-y-4 text-center md:text-right w-full">
-                            <h2 class="text-2xl md:text-3xl font-black text-white">${title}</h2>
-                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-gray-300">
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-lg">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</span>
-                                <span class="bg-white/5 px-3 py-1 rounded-lg">📅 ${year}</span>
-                                ${mediaType === 'tv' ? `<span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg font-bold">📺 ${seasonsCount} مواسم</span>` : ''}
-                            </div>
-                            <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">${item.overview || 'لا يوجد وصف متاح.'}</p>
-                            
-                            ${castHtml ? `<div class="pt-2"><h4 class="text-xs text-gray-400 mb-2">أبرز الممثلين:</h4><div class="flex flex-wrap justify-center md:justify-start gap-2">${castHtml}</div></div>` : ''}
-                            
-                            <div class="flex flex-wrap gap-3 pt-4 justify-center md:justify-start">
-                                <button onclick="openPlayerModal(${item.id}, '${safeTitle}', ${seasonsCount}, 1, 1, '${mediaType}')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg glow-emerald">
-                                    <i class="fa-solid fa-play"></i> مشاهدة الآن
-                                </button>
-                                ${trailerBtn}
-                                <button onclick="shareMedia('${safeTitle}')" class="glass-card hover:bg-white/10 text-white px-3 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-share-nodes text-emerald-400"></i> مشاركة
-                                </button>
-                                <button id="modalWatchBtn" onclick='toggleWatchlist(${itemJson}, true)' class="glass-card hover:bg-white/10 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
-                                    <i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'}"></i> ${isSaved ? 'محفوظ' : 'حفظ'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-            } catch (e) { content.innerHTML = `<p class="text-center text-red-400 py-6 text-xs">فشل تحميل التفاصيل.</p>`; }
-        }
-
-        function shareMedia(title) {
-            const shareData = { title: title, text: `شاهد ${title} مجاناً على EfrînFlix Pro:`, url: window.location.href };
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                showToast("تم نسخ رابط الموقع بالحافظة!", "fa-copy", "text-amber-400");
-            }
-        }
-
-        function saveContinueWatching(id, title, type = activePlayingItem.type, season = 1, episode = 1) {
-            const watchData = { id, title, type, season, episode, time: new Date().getTime() };
-            localStorage.setItem('efrinflix_last_watched', JSON.stringify(watchData));
-            checkContinueWatching();
-        }
-
-        function checkContinueWatching() {
-            const last = JSON.parse(localStorage.getItem('efrinflix_last_watched') || 'null');
-            const sec = document.getElementById('continueWatchingSection');
-            if (last && last.title) {
-                document.getElementById('continueTitle').innerText = last.title + (last.type === 'tv' ? ` (الموسم ${last.season || 1} - الحلقة ${last.episode || 1})` : '');
-                const safeTitle = last.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                document.getElementById('continueBtn').onclick = () => openPlayerModal(last.id, safeTitle, 1, last.season || 1, last.episode || 1, last.type);
-                sec.classList.remove('hidden');
-            } else { sec.classList.add('hidden'); }
-        }
-
-        // --- Video Player Logic ---
-        function openPlayerModal(id, title, seasonsCount = 1, startSeason = 1, startEpisode = 1, mediaType = currentType) {
-            closeModal('detailsModal');
-            activePlayingItem = { id, type: mediaType, season: startSeason, episode: startEpisode, title };
-            document.getElementById('playerTitle').innerText = title;
-            
-            const tvSelectors = document.getElementById('tvSelectors');
-            const seasonSelect = document.getElementById('seasonSelect');
-            
-            saveContinueWatching(id, title, mediaType, startSeason, startEpisode);
-
-            if (mediaType === 'tv') {
-                tvSelectors.classList.remove('hidden');
-                seasonSelect.innerHTML = '';
-                for (let i = 1; i <= Math.max(seasonsCount, startSeason); i++) {
-                    seasonSelect.innerHTML += `<option value="${i}">الموسم ${i}</option>`;
-                }
-                seasonSelect.value = startSeason;
-                updateEpisodeSelector(startEpisode);
-            } else {
-                tvSelectors.classList.add('hidden');
-                switchServer(1);
-            }
-            document.getElementById('playerModal').classList.remove('hidden');
-        }
-
-        async function updateEpisodeSelector(selectedEp = 1) {
-            const season = document.getElementById('seasonSelect').value;
-            activePlayingItem.season = season;
-            const episodeSelect = document.getElementById('episodeSelect');
-            episodeSelect.innerHTML = '<option value="1">جاري التحميل...</option>';
-            
-            try {
-                const res = await fetch(`${BASE_URL}/tv/${activePlayingItem.id}/season/${season}?api_key=${API_KEY}&language=ar-SA`);
-                const data = await res.json();
-                episodeSelect.innerHTML = '';
-                if (data.episodes && data.episodes.length > 0) {
-                    data.episodes.forEach(ep => {
-                        episodeSelect.innerHTML += `<option value="${ep.episode_number}">الحلقة ${ep.episode_number}: ${ep.name || ''}</option>`;
-                    });
-                } else {
-                    for(let i = 1; i <= 24; i++) {
-                        episodeSelect.innerHTML += `<option value="${i}">الحلقة ${i}</option>`;
-                    }
-                }
-            } catch(e) {
-                episodeSelect.innerHTML = '';
-                for(let i = 1; i <= 24; i++) {
-                    episodeSelect.innerHTML += `<option value="${i}">الحلقة ${i}</option>`;
-                }
-            }
-            episodeSelect.value = selectedEp;
-            activePlayingItem.episode = selectedEp;
-            switchServer(currentServer);
-        }
-
-        function changeTvEpisode() {
-            activePlayingItem.episode = document.getElementById('episodeSelect').value;
-            saveContinueWatching(activePlayingItem.id, activePlayingItem.title, activePlayingItem.type, activePlayingItem.season, activePlayingItem.episode);
-            switchServer(currentServer);
-        }
-
-        function switchServer(srvNum) {
-            currentServer = srvNum;
-            const iframe = document.getElementById('videoIframe');
-            const extBtn = document.getElementById('externalPlayerBtn');
-            const { id, type, season, episode } = activePlayingItem;
-
-            for (let i = 1; i <= 5; i++) {
-                const btn = document.getElementById(`srv${i}`);
-                if (btn) {
-                    btn.className = (i === srvNum) 
-                        ? "px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600 shadow" 
-                        : "px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white";
-                }
-            }
-
-            let targetUrl = "";
-            if (type === 'movie') {
-                switch(srvNum) {
-                    case 1: targetUrl = `https://vidlink.pro/movie/${id}?primaryColor=10b981`; break;
-                    case 2: targetUrl = `https://vidsrc.pm/embed/movie/${id}`; break;
-                    case 3: targetUrl = `https://www.2embed.cc/embed/${id}`; break;
-                    case 4: targetUrl = `https://player.videasy.net/movie/${id}`; break;
-                    case 5: targetUrl = `https://autoembed.co/movie/tmdb/${id}`; break;
-                    default: targetUrl = `https://vidlink.pro/movie/${id}`;
-                }
-            } else {
-                switch(srvNum) {
-                    case 1: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=10b981`; break;
-                    case 2: targetUrl = `https://vidsrc.pm/embed/tv/${id}/${season}/${episode}`; break;
-                    case 3: targetUrl = `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`; break;
-                    case 4: targetUrl = `https://player.videasy.net/tv/${id}/${season}/${episode}`; break;
-                    case 5: targetUrl = `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`; break;
-                    default: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
-                }
-            }
-
-            iframe.src = targetUrl;
-            if (extBtn) extBtn.href = targetUrl;
-        }
-
-        function closePlayerModal() {
-            const iframe = document.getElementById('videoIframe');
-            iframe.src = "";
-            document.getElementById('playerModal').classList.add('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function closeModalOnBackdrop(e, modalId) {
-            if (e.target.id === modalId) {
-                if (modalId === 'playerModal') closePlayerModal();
-                else closeModal(modalId);
-            }
-        }
-
-        // Watchlist Logic
-        function toggleWatchlist(itemData, updateModalBtn = false) {
-            const item = (typeof itemData === 'object') ? itemData : (currentItems.find(i => i.id === itemData) || { id: itemData, title: 'عنصر', type: currentType });
-            const itemType = item.type || currentType;
-
-            const index = watchlist.findIndex(w => w.id === item.id && w.type === itemType);
-            if (index > -1) {
-                watchlist.splice(index, 1);
-                showToast("تمت الإزالة من المفضلة", "fa-bookmark", "text-red-400");
-            } else {
-                watchlist.push({ 
-                    id: item.id, 
-                    type: itemType, 
-                    title: item.title || item.name || 'عنصر سينمائي', 
-                    poster_path: item.poster_path || '' 
-                });
-                showToast("تمت الإضافة للمفضلة", "fa-bookmark", "text-brand-gold");
-            }
-            localStorage.setItem('efrinflix_watchlist_v2', JSON.stringify(watchlist));
-            updateWatchlistUI();
-            fetchMedia(false);
-
-            if (updateModalBtn) {
-                const isSaved = watchlist.some(w => w.id === item.id && w.type === itemType);
-                const btn = document.getElementById('modalWatchBtn');
-                if (btn) {
-                    btn.innerHTML = `<i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'}"></i> ${isSaved ? 'محفوظ' : 'حفظ'}`;
-                }
-            }
-        }
-
-        function updateWatchlistUI() {
-            const count = document.getElementById('watchlistCount');
-            if (count) count.innerText = watchlist.length;
-
-            const container = document.getElementById('watchlistContainer');
-            if (!container) return;
-
-            if (watchlist.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-400 text-xs py-8">قائمة المفضلة فارغة حالياً.</p>`;
-                return;
-            }
-
-            container.innerHTML = watchlist.map(w => {
-                const itemJson = JSON.stringify(w).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                return `
-                <div class="flex items-center justify-between glass-card p-2 rounded-xl border border-white/5">
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="openDetailsModal(${w.id}, '${w.type}')">
-                        <img src="${w.poster_path ? IMAGE_BASE + w.poster_path : 'https://via.placeholder.com/50'}" class="w-10 h-14 object-cover rounded-lg">
-                        <div>
-                            <h4 class="text-xs font-bold text-white truncate max-w-[180px]">${w.title}</h4>
-                            <span class="text-[10px] text-emerald-400 font-semibold">${w.type === 'movie' ? 'فيلم' : 'مسلسل'}</span>
-                        </div>
-                    </div>
-                    <button onclick='toggleWatchlist(${itemJson})' class="text-red-400 hover:text-red-300 p-2 text-xs">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `;}).join('');
-        }
-
-        function toggleWatchlistModal() {
-            const modal = document.getElementById('watchlistModal');
-            if (modal.classList.contains('hidden')) {
-                updateWatchlistUI();
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
-        }
-
-        // Roulette Logic
-        function openRouletteModal() {
-            document.getElementById('rouletteResult').classList.add('hidden');
-            document.getElementById('rouletteModal').classList.remove('hidden');
-        }
-
-        async function spinRoulette() {
-            const wheel = document.getElementById('wheelCircle');
-            const spinBtn = document.getElementById('spinBtn');
-            const resultBox = document.getElementById('rouletteResult');
-            
-            spinBtn.disabled = true;
-            spinBtn.classList.add('opacity-50');
-            resultBox.classList.add('hidden');
-
-            const randomDegrees = 1440 + Math.floor(Math.random() * 360);
-            wheel.style.transform = `rotate(${randomDegrees}deg)`;
-
-            try {
-                const randomPage = Math.floor(Math.random() * 10) + 1;
-                const res = await fetch(`${BASE_URL}/discover/${currentType}?api_key=${API_KEY}&page=${randomPage}&sort_by=popularity.desc&language=ar-SA`);
-                const data = await res.json();
-                
-                setTimeout(() => {
-                    spinBtn.disabled = false;
-                    spinBtn.classList.remove('opacity-50');
-                    
-                    if (data.results && data.results.length > 0) {
-                        const randomItem = data.results[Math.floor(Math.random() * data.results.length)];
-                        const title = randomItem.title || randomItem.name;
-                        const poster = randomItem.poster_path ? IMAGE_BASE + randomItem.poster_path : 'https://via.placeholder.com/100';
-
-                        resultBox.innerHTML = `
-                            <div class="flex items-center gap-3 text-right">
-                                <img src="${poster}" class="w-14 h-20 object-cover rounded-xl shadow">
-                                <div>
-                                    <span class="text-[10px] text-amber-400 font-bold block">🎉 اخترنا لك:</span>
-                                    <h4 class="font-black text-white text-xs md:text-sm mb-1">${title}</h4>
-                                    <button onclick="closeModal('rouletteModal'); openDetailsModal(${randomItem.id}, '${currentType}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                        <i class="fa-solid fa-eye"></i> عرض التفاصيل
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                        resultBox.classList.remove('hidden');
-                    }
-                }, 4000);
-            } catch(e) {
-                spinBtn.disabled = false;
-                spinBtn.classList.remove('opacity-50');
-            }
-        }
-    </script>
-
-    <!-- PWA Service Worker Registration & Installation Logic -->
-    <script>
-        let deferredPrompt;
-        const installBtn = document.getElementById('pwaInstallBtn');
-
-        // 1. تسجيل Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
-                    .then(reg => console.log('✅ تم تسجيل Service Worker بنجاح، Scope:', reg.scope))
-                    .catch(err => console.error('❌ فشل تسجيل Service Worker:', err));
-            });
-        }
-
-        // 2. الالتقاط التلقائي لطلب تثبيت PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (installBtn) {
-                installBtn.classList.remove('hidden');
-            }
-        });
-
-        // 3. تنفيذ التثبيت عند النقر على الزر
-        async function installPWA() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                if (installBtn) installBtn.classList.add('hidden');
-            }
-            deferredPrompt = null;
-        }
-
-        // 4. إخفاء الزر إذا تم تثبيت التطبيق بالفعل
-        window.addEventListener('appinstalled', () => {
-            if (installBtn) installBtn.classList.add('hidden');
-        });
-    </script>
+      });
+      $('#videoIframe').addEventListener('load',()=>{clearTimeout(state.playerTimer);$('#playerLoading').hidden=true;});
+      window.addEventListener('storage',event=>{
+        if(event.key==='efrinflix_watchlist_v2'){state.watchlist=readList();renderWatchlist();renderGrid();}
+        if(event.key==='efrinflix_collections_v1'){state.collections=readCollections();renderWatchlist();}
+        if(event.key==='efrinflix_history_v1'){state.history=readHistory();renderHistory();}
+        if(event.key==='efrinflix_language_v1'){state.language=readLanguage();applyTranslations();loadHero();loadShelves();loadMedia();}
+      });
+    }
+    async function installPWA() {
+      if(!state.deferredPrompt)return;
+      state.deferredPrompt.prompt();
+      try { const choice=await state.deferredPrompt.userChoice; if(choice.outcome==='accepted')$('#pwaInstallBtn').hidden=true; }
+      catch(error) { console.error(error); }
+      state.deferredPrompt=null;
+    }
+    async function checkApkDownload() {
+      try {
+        const response=await fetch(new URL('./EfrinFlix.apk',location.href),{method:'HEAD',cache:'no-store'});
+        const type=response.headers.get('content-type')||'';
+        const size=Number(response.headers.get('content-length'))||0;
+        if(response.ok&&(type.includes('application/vnd.android.package-archive')||(type.includes('application/octet-stream')&&size>100000)))$('#apkDownloadBtn').hidden=false;
+      } catch { /* Keep the link hidden when no downloadable APK is available. */ }
+    }
+    function registerPWA() {
+      if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')) {
+        navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(error=>console.error('Service worker registration failed:',error));
+      }
+      window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();state.deferredPrompt=event;$('#pwaInstallBtn').hidden=false;});
+      window.addEventListener('appinstalled',()=>{$('#pwaInstallBtn').hidden=true;state.deferredPrompt=null;});
+      $('#pwaInstallBtn').addEventListener('click',installPWA);
+    }
+    function init() {
+      bindEvents(); applyTranslations(); renderWatchlist(); renderContinue();
+      loadHero(); loadShelves(); loadMedia(); registerPWA(); checkApkDownload();
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+  })();
+  </script>
 </body>
 </html>
