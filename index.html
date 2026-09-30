@@ -15,20 +15,22 @@
     <meta name="robots" content="index, follow">
     
     <!-- PWA Setup & Manifest Link -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#080C14">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="EfrînFlix">
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192.png?text=EfrinFlix">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://via.placeholder.com/192.png?text=EfrinFlix">
+    
+    <!-- PWA Icons Embedded via Data URI -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
     
     <!-- Open Graph (Social Sharing) -->
     <meta property="og:title" content="EfrînFlix Pro - سينما البريميوم">
     <meta property="og:description" content="استكشف آلاف الأفلام والمسلسلات بجودة عالية وبث سريع مجاناً.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=EfrinFlix+Pro">
+    <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>">
 
     <!-- Tailwind CSS & FontAwesome & Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -138,6 +140,12 @@
 
             <!-- Top Actions -->
             <div class="flex items-center gap-2 md:gap-3">
+                <!-- PWA Install Button -->
+                <button id="pwaInstallBtn" onclick="installPWA()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-download"></i>
+                    <span class="hidden sm:inline">تثبيت التطبيق</span>
+                </button>
+
                 <button onclick="openRouletteModal()" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
                     <i class="fa-solid fa-dice text-amber-400"></i>
                     <span class="hidden sm:inline">اقتراح</span>
@@ -867,15 +875,44 @@
         }
     </script>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker Registration & Installation Logic -->
     <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwaInstallBtn');
+
+        // 1. تسجيل Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker Registered Successfully:', reg.scope))
-                    .catch(err => console.log('Service Worker Registration Failed:', err));
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then(reg => console.log('✅ تم تسجيل Service Worker بنجاح، Scope:', reg.scope))
+                    .catch(err => console.error('❌ فشل تسجيل Service Worker:', err));
             });
         }
+
+        // 2. الالتقاط التلقائي لطلب تثبيت PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+            }
+        });
+
+        // 3. تنفيذ التثبيت عند النقر على الزر
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                if (installBtn) installBtn.classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+
+        // 4. إخفاء الزر إذا تم تثبيت التطبيق بالفعل
+        window.addEventListener('appinstalled', () => {
+            if (installBtn) installBtn.classList.add('hidden');
+        });
     </script>
 </body>
 </html>
