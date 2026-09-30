@@ -2,7 +2,8 @@
   "name": "EfrînFlix Pro",
   "short_name": "EfrînFlix",
   "description": "منصة EfrînFlix Pro لمشاهدة أحدث الأفلام والمسلسلات العالمية المترجمة بجودة عالية",
-  "start_url": "./",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#080C14",
   "theme_color": "#080C14",
@@ -11,15 +12,9 @@
   "lang": "ar",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192.png?text=EfrinFlix",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://via.placeholder.com/512.png?text=EfrinFlix",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310B981'><rect width='512' height='512' rx='100' fill='%23080C14'/><circle cx='256' cy='256' r='180' fill='%2310B981'/><circle cx='256' cy='256' r='150' fill='%230C1019'/><path d='M220 170 L330 256 L220 342 Z' fill='%2310B981'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
