@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- تم تعديل Referrer إلى no-referrer للسماح بتشغيل السيرفرات دون حظر CORS -->
-    <meta name="referrer" content="no-referrer">
+    <!-- السماح بنقل Referrer الأساسي لتشغيل السيرفرات دون حظر -->
+    <meta name="referrer" content="origin-when-cross-origin">
     
     <!-- ================= SEO & PWA Meta Tags ================= -->
     <title>EfrînFlix Pro - منصة السينما العالمية والمسلسلات</title>
@@ -278,14 +278,13 @@
                 <!-- قائمة السيرفرات المحدثة والمستقرة -->
                 <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] overflow-x-auto no-scrollbar">
                     <button id="srv1" onclick="switchServer(1)" class="px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600">سيرفر 1 (VidLink)</button>
-                    <button id="srv2" onclick="switchServer(2)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2 (EmbedSu)</button>
-                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (VidSrc VIP)</button>
+                    <button id="srv2" onclick="switchServer(2)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 2 (VidSrc)</button>
+                    <button id="srv3" onclick="switchServer(3)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 3 (2Embed)</button>
                     <button id="srv4" onclick="switchServer(4)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 4 (Videasy)</button>
                     <button id="srv5" onclick="switchServer(5)" class="px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white">سيرفر 5 (AutoEmbed)</button>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <!-- زر الفتح الخارجي لحل مشكلة iOS Safari -->
                     <a id="externalPlayerBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">فتح خارجي</span>
                     </a>
@@ -299,18 +298,11 @@
                     <span class="text-xs text-gray-400">جاري تحميل المشغل...</span>
                 </div>
 
-                <div id="adShield" onclick="removeAdShield()" class="absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center">
-                    <div class="bg-black/80 backdrop-blur-md text-white text-xs px-4 py-2 rounded-2xl border border-emerald-500/40 shadow-2xl pointer-events-none flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-400 animate-pulse"></i> انقر هنا لتمكين التفاعل مع الفيديو
-                    </div>
-                </div>
-
-                <!-- إضافة referrerpolicy="no-referrer" وخصائص السماح التامة لتوافق Safari -->
-                <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="no-referrer"></iframe>
+                <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="origin"></iframe>
             </div>
 
             <div class="p-2.5 bg-brand-card border-t border-white/10 text-center text-gray-400 text-[11px] leading-relaxed">
-                💡 إذا واجهتك مشكلة في المشاهدة على أجهزة iPhone/Safari، يمكنك النقر على زر <strong>"فتح خارجي"</strong> بالأعلى أو التبديل بين السيرفرات البديلة.
+                💡 إذا واجهتك مشكلة في المشاهدة، يمكنك النقر على زر <strong>"فتح خارجي"</strong> بالأعلى أو التبديل بين السيرفرات البديلة.
             </div>
         </div>
     </div>
@@ -357,22 +349,6 @@
 
     <!-- JS Application Logic -->
     <script>
-        // Intercept Popups
-        window.open = function () {
-            console.log("🛡 تم حظر نافذة منبثقة إعلانية");
-            return { closed: true, close: () => {}, focus: () => {}, blur: () => {} };
-        };
-
-        function removeAdShield() {
-            const shield = document.getElementById('adShield');
-            if (shield) shield.style.display = 'none';
-        }
-
-        function resetAdShield() {
-            const shield = document.getElementById('adShield');
-            if (shield) shield.style.display = 'none'; // تغيير للتسهيل وعدم اعتراض نقرات التشغيل
-        }
-
         // --- Config & State ---
         const API_KEY = "fca02c6813f7dc2ace00bca1009e315a"; 
         const BASE_URL = "https://api.themoviedb.org/3";
@@ -385,7 +361,7 @@
         let currentItems = [];
         let watchlist = JSON.parse(localStorage.getItem('efrinflix_watchlist_v2') || '[]');
         let activePlayingItem = { id: null, type: 'movie', season: 1, episode: 1, title: '' };
-        let currentServer = 1; // حفظ السيرفر الحالي النشط
+        let currentServer = 1;
         let searchTimeout;
 
         const genresList = {
@@ -655,24 +631,28 @@
             } else { sec.classList.add('hidden'); }
         }
 
-        // --- Video Player & High Quality Servers Setup ---
+        // --- Video Player Logic ---
         function openPlayerModal(id, title, seasonsCount = 1) {
             closeModal('detailsModal');
             activePlayingItem = { id, type: currentType, season: 1, episode: 1, title };
             document.getElementById('playerTitle').innerText = title;
+            
             const tvSelectors = document.getElementById('tvSelectors');
-            resetAdShield();
+            const seasonSelect = document.getElementById('seasonSelect');
+            
             saveContinueWatching(id, title);
 
             if (currentType === 'tv') {
                 tvSelectors.classList.remove('hidden');
-                const seasonSelect = document.getElementById('seasonSelect');
                 seasonSelect.innerHTML = '';
-                for (let i = 1; i <= seasonsCount; i++) seasonSelect.innerHTML += `<option value="${i}">الموسم ${i}</option>`;
+                for (let i = 1; i <= seasonsCount; i++) {
+                    seasonSelect.innerHTML += `<option value="${i}">الموسم ${i}</option>`;
+                }
+                seasonSelect.value = 1;
                 updateEpisodeSelector();
             } else {
                 tvSelectors.classList.add('hidden');
-                switchServer(currentServer);
+                switchServer(1);
             }
             document.getElementById('playerModal').classList.remove('hidden');
         }
@@ -680,30 +660,30 @@
         async function updateEpisodeSelector() {
             const season = document.getElementById('seasonSelect').value;
             activePlayingItem.season = season;
-            const epSelect = document.getElementById('episodeSelect');
-            epSelect.innerHTML = '<option value="">جاري جلب الحلقات...</option>';
+            const episodeSelect = document.getElementById('episodeSelect');
+            episodeSelect.innerHTML = '<option value="1">جاري التحميل...</option>';
             
             try {
                 const res = await fetch(`${BASE_URL}/tv/${activePlayingItem.id}/season/${season}?api_key=${API_KEY}&language=ar-SA`);
                 const data = await res.json();
-                epSelect.innerHTML = '';
-                
+                episodeSelect.innerHTML = '';
                 if (data.episodes && data.episodes.length > 0) {
                     data.episodes.forEach(ep => {
-                        epSelect.innerHTML += `<option value="${ep.episode_number}">الحلقة ${ep.episode_number} ${ep.name ? '- '+ep.name : ''}</option>`;
+                        episodeSelect.innerHTML += `<option value="${ep.episode_number}">الحلقة ${ep.episode_number}: ${ep.name || ''}</option>`;
                     });
                 } else {
-                    epSelect.innerHTML = '<option value="1">الحلقة 1</option>';
+                    for(let i = 1; i <= 24; i++) {
+                        episodeSelect.innerHTML += `<option value="${i}">الحلقة ${i}</option>`;
+                    }
                 }
-                
-                activePlayingItem.episode = epSelect.value || 1;
-                switchServer(currentServer);
-            } catch (e) {
-                epSelect.innerHTML = '';
-                for (let e = 1; e <= 24; e++) epSelect.innerHTML += `<option value="${e}">الحلقة ${e}</option>`;
-                activePlayingItem.episode = 1;
-                switchServer(currentServer);
+            } catch(e) {
+                episodeSelect.innerHTML = '';
+                for(let i = 1; i <= 24; i++) {
+                    episodeSelect.innerHTML += `<option value="${i}">الحلقة ${i}</option>`;
+                }
             }
+            activePlayingItem.episode = 1;
+            switchServer(currentServer);
         }
 
         function changeTvEpisode() {
@@ -711,129 +691,177 @@
             switchServer(currentServer);
         }
 
-        // دالة التبديل بين السيرفرات السريعة وتعديل رابط الفتح الخارجي
         function switchServer(srvNum) {
             currentServer = srvNum;
             const iframe = document.getElementById('videoIframe');
             const extBtn = document.getElementById('externalPlayerBtn');
             const { id, type, season, episode } = activePlayingItem;
 
-            // تحديث تصميم أزرار السيرفرات
-            [1, 2, 3, 4, 5].forEach(n => {
-                const btn = document.getElementById(`srv${n}`);
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.getElementById(`srv${i}`);
                 if (btn) {
-                    btn.className = n === srvNum 
+                    btn.className = (i === srvNum) 
                         ? "px-2.5 py-1 rounded-lg font-bold text-white bg-emerald-600 shadow" 
                         : "px-2.5 py-1 rounded-lg font-bold text-gray-300 hover:text-white";
                 }
-            });
+            }
 
-            // تفريغ المشغل أولاً لضمان عدم حدوث تداخل
-            iframe.src = '';
-            let targetUrl = '';
-            
+            let targetUrl = "";
             if (type === 'movie') {
                 switch(srvNum) {
-                    case 1: targetUrl = `https://vidlink.pro/movie/${id}`; break;
-                    case 2: targetUrl = `https://embed.su/embed/movie/${id}`; break;
-                    case 3: targetUrl = `https://vidsrc.vip/embed/movie/${id}`; break;
+                    case 1: targetUrl = `https://vidlink.pro/movie/${id}?primaryColor=10b981`; break;
+                    case 2: targetUrl = `https://vidsrc.pm/embed/movie/${id}`; break;
+                    case 3: targetUrl = `https://www.2embed.cc/embed/${id}`; break;
                     case 4: targetUrl = `https://player.videasy.net/movie/${id}`; break;
-                    case 5: targetUrl = `https://player.autoembed.cc/embed/movie/${id}`; break;
+                    case 5: targetUrl = `https://autoembed.co/movie/tmdb/${id}`; break;
                     default: targetUrl = `https://vidlink.pro/movie/${id}`;
                 }
             } else {
                 switch(srvNum) {
-                    case 1: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`; break;
-                    case 2: targetUrl = `https://embed.su/embed/tv/${id}/${season}/${episode}`; break;
-                    case 3: targetUrl = `https://vidsrc.vip/embed/tv/${id}/${season}/${episode}`; break;
+                    case 1: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=10b981`; break;
+                    case 2: targetUrl = `https://vidsrc.pm/embed/tv/${id}/${season}/${episode}`; break;
+                    case 3: targetUrl = `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`; break;
                     case 4: targetUrl = `https://player.videasy.net/tv/${id}/${season}/${episode}`; break;
-                    case 5: targetUrl = `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`; break;
+                    case 5: targetUrl = `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`; break;
                     default: targetUrl = `https://vidlink.pro/tv/${id}/${season}/${episode}`;
                 }
             }
 
+            iframe.src = targetUrl;
             if (extBtn) extBtn.href = targetUrl;
-
-            setTimeout(() => {
-                iframe.src = targetUrl;
-            }, 100);
         }
 
         function closePlayerModal() {
-            document.getElementById('videoIframe').src = '';
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = "";
             document.getElementById('playerModal').classList.add('hidden');
         }
 
-        // Watchlist
-        function toggleWatchlist(id, fromModal = false) {
-            const item = currentItems.find(i => i.id === id);
-            const idx = watchlist.findIndex(w => w.id === id && w.type === currentType);
-            const isNowSaved = idx === -1;
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
 
-            if (!isNowSaved) {
-                watchlist.splice(idx, 1);
-                showToast("تمت إزالة العمل من المفضلة", "fa-circle-minus", "text-red-400");
-            } else {
-                watchlist.push({ id, type: currentType, title: item?.title || item?.name || 'عمل مفضل', poster: item?.poster_path });
-                showToast("تم حفظ العمل بالمفضلة!", "fa-circle-check", "text-emerald-400");
+        function closeModalOnBackdrop(e, modalId) {
+            if (e.target.id === modalId) {
+                if (modalId === 'playerModal') closePlayerModal();
+                else closeModal(modalId);
             }
+        }
 
+        // Watchlist Logic
+        function toggleWatchlist(id, updateModalBtn = false) {
+            const index = watchlist.findIndex(w => w.id === id && w.type === currentType);
+            if (index > -1) {
+                watchlist.splice(index, 1);
+                showToast("تمت الإزالة من المفضلة", "fa-bookmark", "text-red-400");
+            } else {
+                const item = currentItems.find(i => i.id === id) || { id, title: 'عنصر', poster_path: '' };
+                watchlist.push({ id, type: currentType, title: item.title || item.name, poster_path: item.poster_path });
+                showToast("تمت الإضافة للمفضلة", "fa-bookmark", "text-brand-gold");
+            }
             localStorage.setItem('efrinflix_watchlist_v2', JSON.stringify(watchlist));
             updateWatchlistUI();
-            renderGrid(currentItems);
+            fetchMedia(false);
 
-            if (fromModal) {
+            if (updateModalBtn) {
+                const isSaved = watchlist.some(w => w.id === id && w.type === currentType);
                 const btn = document.getElementById('modalWatchBtn');
-                if (btn) btn.innerHTML = `<i class="fa-solid ${isNowSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'}"></i> ${isNowSaved ? 'محفوظ' : 'حفظ'}`;
+                if (btn) {
+                    btn.innerHTML = `<i class="fa-solid ${isSaved ? 'fa-bookmark text-brand-gold' : 'fa-bookmark text-white/70'}"></i> ${isSaved ? 'محفوظ' : 'حفظ'}`;
+                }
             }
         }
 
         function updateWatchlistUI() {
-            document.getElementById('watchlistCount').innerText = watchlist.length;
+            const count = document.getElementById('watchlistCount');
+            if (count) count.innerText = watchlist.length;
+
             const container = document.getElementById('watchlistContainer');
-            container.innerHTML = '';
-            if (watchlist.length === 0) { container.innerHTML = `<p class="text-center text-gray-400 text-xs py-6">القائمة فارغة حالياً.</p>`; return; }
+            if (!container) return;
 
-            watchlist.forEach(w => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between p-2 glass-card rounded-xl border border-white/5">
-                        <div class="flex items-center gap-3 cursor-pointer" onclick="openDetailsModal(${w.id})">
-                            <img src="${w.poster ? IMAGE_BASE+w.poster : 'https://via.placeholder.com/100'}" class="w-8 h-12 object-cover rounded-lg">
-                            <div>
-                                <h4 class="font-bold text-white text-xs truncate max-w-[180px]">${w.title}</h4>
-                                <span class="text-[10px] text-emerald-400">${w.type === 'movie' ? 'فيلم' : 'مسلسل'}</span>
-                            </div>
+            if (watchlist.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 text-xs py-8">قائمة المفضلة فارغة حالياً.</p>`;
+                return;
+            }
+
+            container.innerHTML = watchlist.map(w => `
+                <div class="flex items-center justify-between glass-card p-2 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="openDetailsModal(${w.id})">
+                        <img src="${w.poster_path ? IMAGE_BASE + w.poster_path : 'https://via.placeholder.com/50'}" class="w-10 h-14 object-cover rounded-lg">
+                        <div>
+                            <h4 class="text-xs font-bold text-white truncate max-w-[180px]">${w.title}</h4>
+                            <span class="text-[10px] text-emerald-400 font-semibold">${w.type === 'movie' ? 'فيلم' : 'مسلسل'}</span>
                         </div>
-                        <button onclick="toggleWatchlist(${w.id})" class="text-red-400 hover:text-red-600 p-2 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
-            });
+                    </div>
+                    <button onclick="toggleWatchlist(${w.id})" class="text-red-400 hover:text-red-300 p-2 text-xs">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
         }
 
-        function toggleWatchlistModal() { document.getElementById('watchlistModal').classList.toggle('hidden'); }
-        
-        // Roulette
-        function openRouletteModal() { document.getElementById('rouletteResult').classList.add('hidden'); document.getElementById('rouletteModal').classList.remove('hidden'); }
+        function toggleWatchlistModal() {
+            const modal = document.getElementById('watchlistModal');
+            if (modal.classList.contains('hidden')) {
+                updateWatchlistUI();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Roulette Logic
+        function openRouletteModal() {
+            document.getElementById('rouletteResult').classList.add('hidden');
+            document.getElementById('rouletteModal').classList.remove('hidden');
+        }
+
         async function spinRoulette() {
-            const wheel = document.getElementById('wheelCircle'), btn = document.getElementById('spinBtn');
-            btn.disabled = true;
-            wheel.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`;
-            try {
-                const res = await fetch(`${BASE_URL}/discover/${currentType}?api_key=${API_KEY}&page=${Math.floor(Math.random() * 5) + 1}&sort_by=vote_average.desc&vote_count.gte=300&language=ar-SA`);
-                const data = await res.json();
-                setTimeout(() => {
-                    const r = data.results[Math.floor(Math.random() * data.results.length)];
-                    document.getElementById('rouletteResult').innerHTML = `
-                        <p class="text-xs text-emerald-400 font-bold mb-1">🎉 النتيجة الموصى بها:</p>
-                        <h4 class="font-bold text-white text-sm">${r.title || r.name}</h4>
-                        <button onclick="openDetailsModal(${r.id}); closeModal('rouletteModal');" class="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1 rounded-xl font-bold">عرض التفاصيل والمشاهدة</button>`;
-                    document.getElementById('rouletteResult').classList.remove('hidden');
-                    btn.disabled = false;
-                }, 4000);
-            } catch { btn.disabled = false; }
-        }
+            const wheel = document.getElementById('wheelCircle');
+            const spinBtn = document.getElementById('spinBtn');
+            const resultBox = document.getElementById('rouletteResult');
+            
+            spinBtn.disabled = true;
+            spinBtn.classList.add('opacity-50');
+            resultBox.classList.add('hidden');
 
-        function closeModal(m) { document.getElementById(m).classList.add('hidden'); }
-        function closeModalOnBackdrop(e, m) { if (e.target.id === m) closeModal(m); }
+            const randomDegrees = 1440 + Math.floor(Math.random() * 360);
+            wheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+            try {
+                const randomPage = Math.floor(Math.random() * 10) + 1;
+                const res = await fetch(`${BASE_URL}/discover/${currentType}?api_key=${API_KEY}&page=${randomPage}&sort_by=popularity.desc&language=ar-SA`);
+                const data = await res.json();
+                
+                setTimeout(() => {
+                    spinBtn.disabled = false;
+                    spinBtn.classList.remove('opacity-50');
+                    
+                    if (data.results && data.results.length > 0) {
+                        const randomItem = data.results[Math.floor(Math.random() * data.results.length)];
+                        const title = randomItem.title || randomItem.name;
+                        const poster = randomItem.poster_path ? IMAGE_BASE + randomItem.poster_path : 'https://via.placeholder.com/100';
+
+                        resultBox.innerHTML = `
+                            <div class="flex items-center gap-3 text-right">
+                                <img src="${poster}" class="w-14 h-20 object-cover rounded-xl shadow">
+                                <div>
+                                    <span class="text-[10px] text-amber-400 font-bold block">🎉 اخترنا لك:</span>
+                                    <h4 class="font-black text-white text-xs md:text-sm mb-1">${title}</h4>
+                                    <button onclick="closeModal('rouletteModal'); openDetailsModal(${randomItem.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                        <i class="fa-solid fa-eye"></i> عرض التفاصيل
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        resultBox.classList.remove('hidden');
+                    }
+                }, 4000);
+            } catch(e) {
+                spinBtn.disabled = false;
+                spinBtn.classList.remove('opacity-50');
+            }
+        }
     </script>
 </body>
 </html>
