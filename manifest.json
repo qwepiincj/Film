@@ -1,23 +1,23 @@
 {
-  "name": "EfrînFilx",
-  "short_name": "EfrînFilx",
-  "description": "تطبيق EfrînFilx",
+  "name": "EfrînFlix Pro",
+  "short_name": "EfrînFlix",
+  "description": "منصة EfrînFlix Pro لمشاهدة أحدث الأفلام والمسلسلات العالمية المترجمة بجودة عالية",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#080C14",
+  "theme_color": "#080C14",
   "orientation": "portrait",
   "dir": "rtl",
   "lang": "ar",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "https://via.placeholder.com/192.png?text=EfrinFlix",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "https://via.placeholder.com/512.png?text=EfrinFlix",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
